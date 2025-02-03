@@ -32,6 +32,49 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Esclude le cartelle di compilazione
+bin/
+obj/
+
+# Esclude file di configurazione locali
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Esclude file di log e temporanei
+*.log
+*.tlog
+*.cache
+
+# Esclude cartelle di migrazioni temporanee
+migrations/
+
+# Esclude la cartella di static web assets
+**/staticwebassets/
+
+# Esclude pacchetti e dipendenze locali
+packages/
+node_modules/
+
+# Esclude le cartelle di configurazione di Visual Studio
+.vscode/
+.ionide/
+.idea/
+
+# Esclude le cartelle del Frontend (se necessario)
+CalendarioFrontEnd/wwwroot/lib/
+CalendarioFrontEnd/wwwroot/sample-data/
+
+# Esclude i file di ambiente
+.env
+
+# Esclude i file di lock e database locali
+*.db
+*.sqlite
+*.lock
+
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot

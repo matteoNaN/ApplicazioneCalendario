@@ -1,0 +1,71 @@
+Elenco del percorso delle cartelle per il volume Volume
+Numero di serie del volume: EE87-8468
+D:.
++---.github
+¦   +---workflows
++---API_ApplicazioneCalendario
+¦   +---bin
+¦   ¦   +---Debug
+¦   ¦       +---net9.0
+¦   ¦           +---cs
+¦   ¦           +---de
+¦   ¦           +---es
+¦   ¦           +---fr
+¦   ¦           +---it
+¦   ¦           +---ja
+¦   ¦           +---ko
+¦   ¦           +---pl
+¦   ¦           +---pt-BR
+¦   ¦           +---ru
+¦   ¦           +---runtimes
+¦   ¦           ¦   +---unix
+¦   ¦           ¦   ¦   +---lib
+¦   ¦           ¦   ¦       +---net6.0
+¦   ¦           ¦   +---win
+¦   ¦           ¦   ¦   +---lib
+¦   ¦           ¦   ¦       +---net6.0
+¦   ¦           ¦   +---win-arm
+¦   ¦           ¦   ¦   +---native
+¦   ¦           ¦   +---win-arm64
+¦   ¦           ¦   ¦   +---native
+¦   ¦           ¦   +---win-x64
+¦   ¦           ¦   ¦   +---native
+¦   ¦           ¦   +---win-x86
+¦   ¦           ¦       +---native
+¦   ¦           +---tr
+¦   ¦           +---zh-Hans
+¦   ¦           +---zh-Hant
+¦   +---Controllers
+¦   +---DataAccess
+¦   +---Migrations
+¦   +---obj
+¦   ¦   +---Debug
+¦   ¦       +---net9.0
+¦   ¦           +---ref
+¦   ¦           +---refint
+¦   ¦           +---staticwebassets
+¦   +---Properties
++---CalendarioAmici
+¦   +---obj
+¦   +---Properties
++---CalendarioFrontEnd
+    +---bin
+    ¦   +---Debug
+    ¦       +---net9.0
+    +---Layout
+    +---obj
+    ¦   +---Debug
+    ¦       +---net9.0
+    ¦           +---ref
+    ¦           +---refint
+    ¦           +---staticwebassets
+    +---Pages
+    +---Properties
+    +---wwwroot
+        +---css
+        +---lib
+        ¦   +---bootstrap
+        ¦       +---dist
+        ¦           +---css
+        ¦           +---js
+        +---sample-data
