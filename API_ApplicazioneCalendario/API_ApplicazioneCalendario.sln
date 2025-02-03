@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_ApplicazioneCalendario", "API_ApplicazioneCalendario.csproj", "{60F1AB34-2504-41C8-A355-2F34DAAA2405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarioAmici", "..\CalendarioAmici\CalendarioAmici.csproj", "{849A6829-D62B-476E-B429-6876F39FBAD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarioFrontEnd", "..\CalendarioFrontEnd\CalendarioFrontEnd.csproj", "{A1DDFE2A-5D6A-46BE-8AAD-0D5F28D9E35D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "..\SharedLibrary\SharedLibrary.csproj", "{EBC880E2-7984-4C11-8850-712FE72986AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +19,14 @@ Global
 		{60F1AB34-2504-41C8-A355-2F34DAAA2405}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60F1AB34-2504-41C8-A355-2F34DAAA2405}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60F1AB34-2504-41C8-A355-2F34DAAA2405}.Release|Any CPU.Build.0 = Release|Any CPU
-		{849A6829-D62B-476E-B429-6876F39FBAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{849A6829-D62B-476E-B429-6876F39FBAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{849A6829-D62B-476E-B429-6876F39FBAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{849A6829-D62B-476E-B429-6876F39FBAD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1DDFE2A-5D6A-46BE-8AAD-0D5F28D9E35D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1DDFE2A-5D6A-46BE-8AAD-0D5F28D9E35D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1DDFE2A-5D6A-46BE-8AAD-0D5F28D9E35D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1DDFE2A-5D6A-46BE-8AAD-0D5F28D9E35D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC880E2-7984-4C11-8850-712FE72986AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC880E2-7984-4C11-8850-712FE72986AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC880E2-7984-4C11-8850-712FE72986AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC880E2-7984-4C11-8850-712FE72986AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

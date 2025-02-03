@@ -1,7 +1,9 @@
 
-using API_ApplicazioneCalendario.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using SharedLibrary.DataAccess;
+using SharedLibrary.Models.IdentityOverrides;
 
 namespace API_ApplicazioneCalendario
 {
@@ -13,11 +15,21 @@ namespace API_ApplicazioneCalendario
 
             // Add services to the container.
 
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "API Calendario",
+                    Version = "v1",
+                    Description = "Una semplice API per la gestione del calendario",
+                });
+            });
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Configura Identity
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -31,7 +43,7 @@ namespace API_ApplicazioneCalendario
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Swagger"));
             }
 
             app.UseHttpsRedirection();
