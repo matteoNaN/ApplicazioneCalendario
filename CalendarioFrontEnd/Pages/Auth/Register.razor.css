@@ -1,0 +1,11 @@
+﻿.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.validation-message {
+    color: #dc3545;
+    font-size: 0.875em;
+}

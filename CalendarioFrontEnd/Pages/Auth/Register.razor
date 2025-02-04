@@ -1,0 +1,95 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using CalendarioFrontEnd.Auth
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<div class="auth-container">
+    <div class="card p-4" style="max-width: 500px; margin: 2rem auto;">
+        <h3 class="text-center mb-4">Crea un nuovo account</h3>
+
+        <EditForm Model="@registerModel" OnValidSubmit="@HandleRegistration">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <InputText @bind-Value="registerModel.Email" class="form-control" id="email" />
+                <ValidationMessage For="@(() => registerModel.Email)" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="password">Password</label>
+                <InputText type="password" @bind-Value="registerModel.Password" class="form-control" id="password" />
+                <ValidationMessage For="@(() => registerModel.Password)" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="confirmPassword">Conferma Password</label>
+                <InputText type="password" @bind-Value="registerModel.ConfirmPassword" class="form-control" id="confirmPassword" />
+                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+            </div>
+
+            @if (registrationError is not null)
+            {
+                <div class="alert alert-danger">@registrationError</div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100" disabled="@isProcessing">
+                @if (isProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                }
+                Registrati
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-3">
+            <a href="/login" class="text-decoration-none">Hai già un account? Accedi</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private bool isProcessing = false;
+    private string? registrationError;
+
+    private async Task HandleRegistration()
+    {
+        isProcessing = true;
+        registrationError = null;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/register", registerModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/login?registrationSuccess=true");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                registrationError = errorContent?.Errors?.FirstOrDefault() ?? "Errore durante la registrazione";
+            }
+        }
+        catch (Exception ex)
+        {
+            registrationError = $"Errore di connessione: {ex.Message}";
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+
+
+    public class ApiErrorResponse
+    {
+        public List<string>? Errors { get; set; }
+    }
+
+
+}

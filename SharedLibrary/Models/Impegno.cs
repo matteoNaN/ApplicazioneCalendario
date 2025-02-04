@@ -8,22 +8,23 @@ using System.Threading.Tasks;
 
 namespace SharedLibrary.Models
 {
-    public class Gruppi
+    public class Impegno
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(1000)]
         public string Description { get; set; }
 
-        // La chiave primaria di ApplicationUser è string, non int
-        public string CreatorUserId { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
-        public ApplicationUser CreatorUser { get; set; }
+        public string UserId { get; set; } // Deve essere string
+        public Guid GruppoId { get; set; }
 
-        public ICollection<GruppoUser> JoinedUsers { get; set; } = new List<GruppoUser>();
+        public ApplicationUser CreationUser { get; set; }
+        public Gruppi Gruppo { get; set; }
     }
 
 }

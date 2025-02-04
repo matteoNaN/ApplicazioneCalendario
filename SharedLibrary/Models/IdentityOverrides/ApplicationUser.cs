@@ -10,6 +10,6 @@ namespace SharedLibrary.Models.IdentityOverrides
 {
     public class ApplicationUser : IdentityUser
     {
-        ICollection<Gruppi> JoinedGroups { get; set; }
+        public ICollection<GruppoUser>? JoinedGroups { get; set; } = null;
     }
 }
