@@ -1,28 +1,89 @@
-﻿@page "/login"
+﻿@page "/authentication/login"
+@using System.ComponentModel.DataAnnotations
+@using SharedLibrary.DTOs.Auth
+
+@inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
-@inject HttpClient Http
+
+<h3>Login</h3>
 
 <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-    <InputText @bind-Value="loginModel.Email" />
-    <InputText type="password" @bind-Value="loginModel.Password" />
-    <button type="submit">Login</button>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Email:</label>
+        <InputText @bind-Value="loginModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password:</label>
+        <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="loginModel.RememberMe" class="form-check-input" />
+        <label class="form-check-label">Ricordami</label>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <button type="submit" class="btn btn-primary" disabled="@isProcessing">
+        @if (isProcessing)
+        {
+            <span class="spinner-border spinner-border-sm"></span>
+        }
+        Login
+    </button>
 </EditForm>
 
 @code {
     private LoginModel loginModel = new();
+    private bool isProcessing = false;
+    private string? errorMessage;
 
     private async Task HandleLogin()
     {
-        var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
-        if (response.IsSuccessStatusCode)
+        isProcessing = true;
+        errorMessage = null;
+
+        try
         {
-            Navigation.NavigateTo("/");
+            // Usa il client nominato "PublicAPI"
+            // Se hai registrato HttpClient con IHttpClientFactory come mostrato in Program.cs,
+            // allora Http è già il client corretto.
+
+            var httpClient = HttpClientFactory.CreateClient("PublicAPI");
+
+            var response = await httpClient.PostAsJsonAsync("api/auth/login", loginModel);
+            if (response.IsSuccessStatusCode)
+            {
+                var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                // Salva il token (ad esempio, in local storage o in un service di autenticazione)
+                // Esempio (se usi un service custom): await authService.SetToken(loginResponse.Token);
+
+                // Naviga verso la home o altra pagina protetta
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Login fallito. Controlla le credenziali.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isProcessing = false;
         }
     }
 
-    public class LoginModel
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
+
 }

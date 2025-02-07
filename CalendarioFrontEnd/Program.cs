@@ -1,6 +1,9 @@
+using CalendarioFrontEnd.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 
 namespace CalendarioFrontEnd
@@ -15,28 +18,37 @@ namespace CalendarioFrontEnd
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-            builder.Services.AddOidcAuthentication(options =>
+            //builder.Services.AddOidcAuthentication(options =>
+            //{
+            //    // Configure your authentication provider options here.
+            //    // For more information, see https://aka.ms/blazor-standalone-auth
+            //    builder.Configuration.Bind("Local", options.ProviderOptions);
+            //});
+
+            builder.Services.AddHttpClient("PublicAPI", client =>
             {
-                // Configure your authentication provider options here.
-                // For more information, see https://aka.ms/blazor-standalone-auth
-                builder.Configuration.Bind("Local", options.ProviderOptions);
+                client.BaseAddress = new Uri("https://localhost:7163/api/");
             });
 
-            builder.Services.AddHttpClient("SecureAPI", client =>
-                    client.BaseAddress = new Uri("https://tuo-api-server"))
-                    .AddHttpMessageHandler<AuthorizationMessageHandler>();
+            // Registra il CustomAuthenticationStateProvider come provider di stato di autenticazione
+            builder.Services.AddSingleton<JwtAuthenticationStateProvider>();
+            builder.Services.AddSingleton<AuthenticationStateProvider>(provider => provider.GetRequiredService<JwtAuthenticationStateProvider>());
 
-            builder.Services.AddScoped(sp =>
-                sp.GetRequiredService<IHttpClientFactory>().CreateClient("SecureAPI"));
+            var appUri = new Uri(builder.HostEnvironment.BaseAddress);
 
-            builder.Services.AddOidcAuthentication(options => {
-                builder.Configuration.Bind("Local", options.ProviderOptions);
-                options.ProviderOptions.ResponseType = "code";
-                options.ProviderOptions.DefaultScopes.Add("openid");
-                options.ProviderOptions.DefaultScopes.Add("profile");
-            });
+            builder.Services.AddScoped(provider => new JwtTokenMessageHandler(appUri, provider.GetRequiredService<JwtAuthenticationStateProvider>()));
+            builder.Services.AddHttpClient("https://localhost:7163/api/", client => client.BaseAddress = appUri)
+                .AddHttpMessageHandler<JwtTokenMessageHandler>();
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyApp.ServerAPI"));
 
-            await builder.Build().RunAsync();
+
+
+            builder.Services.AddAuthorizationCore();
+
+
+
+            var application = builder.Build();
+            await RefreshToken.RefreshJwtToken(application, "https://localhost:7163/api/");
         }
     }
 }

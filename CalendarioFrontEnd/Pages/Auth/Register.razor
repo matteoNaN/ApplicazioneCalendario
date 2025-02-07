@@ -1,7 +1,8 @@
 ﻿@page "/register"
 @using System.ComponentModel.DataAnnotations
 @using CalendarioFrontEnd.Auth
-@inject HttpClient Http
+@using SharedLibrary.DTOs.Auth
+@inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
 
 <div class="auth-container">
@@ -62,7 +63,10 @@
 
         try
         {
-            var response = await Http.PostAsJsonAsync("api/auth/register", registerModel);
+            // Usa il client nominato "PublicAPI"
+            var httpClient = HttpClientFactory.CreateClient("PublicAPI");
+
+            var response = await httpClient.PostAsJsonAsync("Auth/Register", registerModel);
 
             if (response.IsSuccessStatusCode)
             {
@@ -76,7 +80,12 @@
         }
         catch (Exception ex)
         {
-            registrationError = $"Errore di connessione: {ex.Message}";
+            var detailedError = ex is HttpRequestException hre ?
+                $"Status: {hre.StatusCode}, Message: {hre.Message}" :
+                ex.Message;
+
+            registrationError = $"Errore di connessione: {detailedError}";
+            Console.WriteLine($"Full error: {ex}");
         }
         finally
         {
@@ -84,12 +93,8 @@
         }
     }
 
-
-
     public class ApiErrorResponse
     {
         public List<string>? Errors { get; set; }
     }
-
-
 }

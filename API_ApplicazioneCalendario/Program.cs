@@ -58,6 +58,16 @@ namespace API_ApplicazioneCalendario
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazorClient", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7042", "http://localhost:5220")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -73,8 +83,9 @@ namespace API_ApplicazioneCalendario
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCors("AllowBlazorClient");
 
             app.MapControllers();
 

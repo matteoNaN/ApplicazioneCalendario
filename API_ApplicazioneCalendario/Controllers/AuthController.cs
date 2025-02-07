@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SharedLibrary.DTOs.Auth;
 using SharedLibrary.Models.IdentityOverrides;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static CalendarioFrontEnd.Pages.Auth.Login;
 
 namespace API_ApplicazioneCalendario.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [AllowAnonymous]
     public class AuthController : ControllerBase
     {
@@ -30,20 +32,21 @@ namespace API_ApplicazioneCalendario.Controllers
           
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        [HttpPost]
+        public async Task<LoginResponse> Login(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
-                return Unauthorized();
+                return new LoginResponse(false);
 
             var token = _jwtManager.GenerateJwtToken(user);
-            return Ok(new { Token = token });
+
+            return new LoginResponse(true, token);
         }
 
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+
+        [HttpPost]
+        public async Task<RegisterResponse> Register([FromBody] RegisterRequest request)
         {
             var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -51,10 +54,33 @@ namespace API_ApplicazioneCalendario.Controllers
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
-                return BadRequest(new { Errors = errors });
+                return  new RegisterResponse(result.Succeeded,errors.ToList());
             }
 
-            return Ok(new { Message = "Registrazione completata con successo" });
+            return new RegisterResponse(result.Succeeded);
+        }
+
+        [HttpPost]
+        public LoginResponse RefreshToken()
+        {
+            var cookie = HttpContext.Request.Cookies["refresh-token"];
+            if (cookie != null)
+            {
+                var user = this._userManager.Users.FirstOrDefault(user => user.SecurityStamp == cookie);
+                if (user != null)
+                {
+                    var jwtToken = _jwtManager.GenerateJwtToken(user);
+                    return new LoginResponse(true, jwtToken);
+                }
+                else
+                {
+                    return new LoginResponse(false);
+                }
+            }
+            else
+            {
+                return new LoginResponse(false);
+            }
         }
 
     }
