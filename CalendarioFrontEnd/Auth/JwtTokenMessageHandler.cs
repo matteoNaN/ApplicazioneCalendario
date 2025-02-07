@@ -46,7 +46,7 @@ public static class RefreshToken
         using var api = boostrapScope.ServiceProvider.GetRequiredService<HttpClient>();
 
         //var refreshTokenResponse = await api.PostAsync(apiUrl,null);
-        var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+        var request = new HttpRequestMessage(HttpMethod.Post, apiUrl+"auth/RefreshToken");
 
         var response = await api.SendAsync(request);
 
@@ -56,7 +56,7 @@ public static class RefreshToken
         var RefresTokenResponse = JsonSerializer.Deserialize<LoginResponse>(responsecontent);
 
 
-        if (RefresTokenResponse is not null && RefresTokenResponse.isSuccessfull)
+        if (RefresTokenResponse is not null && RefresTokenResponse.IsSuccessfull)
         {
             var loginStateService = boostrapScope.ServiceProvider.GetRequiredService<JwtAuthenticationStateProvider>();
             loginStateService.Login(RefresTokenResponse.Token);

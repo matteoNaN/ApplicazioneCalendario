@@ -21,12 +21,16 @@ namespace SharedLibrary.DTOs.Auth
 
     public class LoginResponse
     {
-        public bool isSuccessfull = false;
-        public string? Token      = null;
-        public LoginResponse(bool isSuccessfull, string? Token = null)
+        public bool IsSuccessfull { get; set; } = false;
+        public string? Token { get; set; } = null;
+
+        // Il costruttore non è necessario per la deserializzazione, ma lo manteniamo per utilità.
+        public LoginResponse() { }
+
+        public LoginResponse(bool isSuccessfull, string? token = null)
         {
-            this.isSuccessfull = isSuccessfull;
-            this.Token = Token;
+            IsSuccessfull = isSuccessfull;
+            Token = token;
         }
     }
 

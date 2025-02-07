@@ -49,6 +49,8 @@ namespace CalendarioFrontEnd
 
             var application = builder.Build();
             await RefreshToken.RefreshJwtToken(application, "https://localhost:7163/api/");
+
+            await application.RunAsync();
         }
     }
 }
