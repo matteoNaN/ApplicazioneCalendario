@@ -1,4 +1,4 @@
-﻿@page "/authentication/login"
+﻿
 @using System.ComponentModel.DataAnnotations
 @using SharedLibrary.DTOs.Auth
 
@@ -6,48 +6,87 @@
 @inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 @inject NavigationManager Navigation
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow p-4" style="max-width: 400px; width: 100%">
-        <h3 class="text-center">Login</h3>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/6681/6681204.png"
+            alt="User Icon"
+            class="user-icon" />
+            <h3 class="login-title">Bentornato</h3>
+            <p class="text-muted">Per favore conferma la tua identità</p>
+        </div>
 
-        <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin" class="mt-3">
+        <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin" class="mt-4">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="mb-3">
-                <label class="form-label">Email:</label>
-                <InputText @bind-Value="loginModel.Email" class="form-control" />
+            <div class="form-group">
+                <label class="form-label">Indirizzo Email</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <InputText @bind-Value="loginModel.Email"
+                    class="form-control"
+                    placeholder="Inserisci la tua Mail" />
+                </div>
                 <ValidationMessage For="@(() => loginModel.Email)" />
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Password:</label>
-                <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+            <div class="form-group mt-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <InputText @bind-Value="loginModel.Password"
+                    type="password"
+                    class="form-control"
+                    placeholder="••••••••" />
+                </div>
                 <ValidationMessage For="@(() => loginModel.Password)" />
             </div>
 
-            <div class="form-check mb-3">
-                <InputCheckbox @bind-Value="loginModel.RememberMe" class="form-check-input" />
-                <label class="form-check-label">Ricordami</label>
+            <div class="d-flex justify-content-between mt-3">
+                <div class="form-check">
+                    <InputCheckbox @bind-Value="loginModel.RememberMe"
+                    class="form-check-input" />
+                    <label class="form-check-label">Ricordami(WIP)</label>
+                </div>
+                <a href="#" class="text-decoration-none">Password Dimencata?(WIP)</a>
             </div>
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <div class="alert alert-danger text-center">@errorMessage</div>
+                <div class="alert alert-danger mt-3 d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>@errorMessage</div>
+                </div>
             }
 
-            <button type="submit" class="btn btn-primary w-100" disabled="@isProcessing">
+            <button type="submit"
+            class="btn btn-primary w-100 mt-4 login-btn"
+            disabled="@isProcessing">
                 @if (isProcessing)
                 {
-                    <span class="spinner-border spinner-border-sm"></span>
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                else
+                {
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
                 }
                 Login
             </button>
         </EditForm>
+
+        <div class="text-center mt-4">
+            <span class="text-muted">Non hai un account ? </span>
+            <a @onclick="HandleRegistrationRedirect" class="nav-link">Registrati</a>
+        </div>
     </div>
 </div>
-
 @code {
+
     private LoginModel loginModel = new();
     private bool isProcessing = false;
     private string? errorMessage;
@@ -59,30 +98,19 @@
 
         try
         {
-            // Usa il client nominato "PublicAPI"
-            // Se hai registrato HttpClient con IHttpClientFactory come mostrato in Program.cs,
-            // allora Http è già il client corretto.
-
             var httpClient = HttpClientFactory.CreateClient("PublicAPI");
-
             var response = await httpClient.PostAsJsonAsync("/api/auth/login", loginModel);
+
             if (response.IsSuccessStatusCode)
             {
                 var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                if(loginResponse is null ||
-                    loginResponse.IsSuccessfull == false ||
-                    string.IsNullOrEmpty(loginResponse.Token))
+                if (loginResponse is null || !loginResponse.IsSuccessfull || string.IsNullOrEmpty(loginResponse.Token))
                 {
                     errorMessage = "Login fallito. Controlla le credenziali.";
                     return;
                 }
 
                 _jwtAuthenticationStateProvider.Login(loginResponse.Token);
-
-                // Salva il token (ad esempio, in local storage o in un service di autenticazione)
-                // Esempio (se usi un service custom): await authService.SetToken(loginResponse.Token);
-
-                // Naviga verso la home o altra pagina protetta
                 Navigation.NavigateTo("/");
             }
             else
@@ -99,6 +127,10 @@
             isProcessing = false;
         }
     }
+    private void HandleRegistrationRedirect(MouseEventArgs e)
+    {
 
+        Navigation.NavigateTo("/register", true);
+    }
 
 }

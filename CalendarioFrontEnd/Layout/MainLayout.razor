@@ -1,44 +1,70 @@
 ﻿@using MudBlazor
 @inherits LayoutComponentBase
 @inject NavigationManager _navManager
-@inject  JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 
-    <main>
-        <div class="top-row px-4 auth">
-            @* Required *@
-            <MudThemeProvider />
-            <MudPopoverProvider />
-
-            @* Needed for dialogs *@
-            <MudDialogProvider />
-
-            @* Needed for snackbars *@
-            <MudSnackbarProvider />
-            <LoginDisplay />
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+@if (isLogged)
+{
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main>
+            <div class="top-row px-4 auth">
+                @* Required *@
+                <MudThemeProvider />
+                <MudPopoverProvider />
+
+                @* Needed for dialogs *@
+                <MudDialogProvider />
+
+                @* Needed for snackbars *@
+                <MudSnackbarProvider />
+                <LoginDisplay />
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}
+else if (!isLogged && IsLoginPage())
+{
+    <Login></Login>
+
+}else if (!isLogged && IsRegisterPage())
+{
+    <Register></Register>
+}
 
 @code
 {
+    private bool isLogged = false;
+
     protected async override Task OnInitializedAsync()
     {
-        base.OnInitialized();
-       
         var user = (await _jwtAuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        if(user.Identity is null || !user.Identity.IsAuthenticated)
+        isLogged = user.Identity is not null && user.Identity.IsAuthenticated;
+        
+
+        if(!isLogged && !IsRegisterPage())
         {
-            _navManager.NavigateToLogin("authentication/login");
+            _navManager.NavigateTo("/login");
         }
     }
 
+    private bool IsLoginPage()
+    {
+        var currentUrl = _navManager.Uri.ToLower();
+        return currentUrl.Contains("/login");
+    }
+
+    private bool IsRegisterPage()
+    {
+        var currentUrl = _navManager.Uri.ToLower();
+        return currentUrl.Contains("/register");
+    }
 }
