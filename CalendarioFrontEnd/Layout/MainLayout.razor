@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor
+@inherits LayoutComponentBase
+@inject NavigationManager _navManager
+@inject  JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,6 +9,15 @@
 
     <main>
         <div class="top-row px-4 auth">
+            @* Required *@
+            <MudThemeProvider />
+            <MudPopoverProvider />
+
+            @* Needed for dialogs *@
+            <MudDialogProvider />
+
+            @* Needed for snackbars *@
+            <MudSnackbarProvider />
             <LoginDisplay />
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
@@ -15,3 +27,18 @@
         </article>
     </main>
 </div>
+
+@code
+{
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+       
+        var user = (await _jwtAuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(user.Identity is null || !user.Identity.IsAuthenticated)
+        {
+            _navManager.NavigateToLogin("authentication/login");
+        }
+    }
+
+}
