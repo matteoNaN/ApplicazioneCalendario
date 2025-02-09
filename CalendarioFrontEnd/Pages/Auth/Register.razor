@@ -1,52 +1,93 @@
-﻿@page "/register"
+﻿
+
+@page "/register"
 @using System.ComponentModel.DataAnnotations
 @using CalendarioFrontEnd.Auth
 @using SharedLibrary.DTOs.Auth
 @inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
 
-<div class="auth-container">
-    <div class="card p-4" style="max-width: 500px; margin: 2rem auto;">
-        <h3 class="text-center mb-4">Crea un nuovo account</h3>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+                 alt="Register Icon"
+                 class="user-icon" />
+            <h3 class="login-title">Crea il tuo account</h3>
 
-        <EditForm Model="@registerModel" OnValidSubmit="@HandleRegistration">
+        </div>
+
+        <EditForm Model="@registerModel" OnValidSubmit="@HandleRegistration" class="mt-4">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="form-group mb-3">
-                <label for="email">Email</label>
-                <InputText @bind-Value="registerModel.Email" class="form-control" id="email" />
+            <div class="form-group">
+                <label class="form-label">Indirizzo Email</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <InputText @bind-Value="registerModel.Email"
+                               class="form-control"
+                               placeholder="Inserisci la tua Email" />
+                </div>
                 <ValidationMessage For="@(() => registerModel.Email)" />
             </div>
 
-            <div class="form-group mb-3">
-                <label for="password">Password</label>
-                <InputText type="password" @bind-Value="registerModel.Password" class="form-control" id="password" />
+            <div class="form-group mt-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <InputText type="password"
+                               @bind-Value="registerModel.Password"
+                               class="form-control"
+                               placeholder="••••••••" />
+                </div>
                 <ValidationMessage For="@(() => registerModel.Password)" />
             </div>
 
-            <div class="form-group mb-4">
-                <label for="confirmPassword">Conferma Password</label>
-                <InputText type="password" @bind-Value="registerModel.ConfirmPassword" class="form-control" id="confirmPassword" />
+            <div class="form-group mt-3">
+                <label class="form-label">Conferma Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-check-circle"></i>
+                    </span>
+                    <InputText type="password"
+                               @bind-Value="registerModel.ConfirmPassword"
+                               class="form-control"
+                               placeholder="••••••••" />
+                </div>
                 <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
             </div>
 
             @if (registrationError is not null)
             {
-                <div class="alert alert-danger">@registrationError</div>
+                <div class="alert alert-danger mt-3 d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>@registrationError</div>
+                </div>
             }
 
-            <button type="submit" class="btn btn-primary w-100" disabled="@isProcessing">
+            <button type="submit"
+                    class="btn btn-primary w-100 mt-4 login-btn"
+                    disabled="@isProcessing">
                 @if (isProcessing)
                 {
-                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                    <span class="spinner-border spinner-border-sm me-2"></span>
                 }
-                Registrati
+                else
+                {
+                    <i class="bi bi-person-plus me-2"></i>
+                }
+                Crea Account
             </button>
         </EditForm>
 
-        <div class="text-center mt-3">
-            <a href="/login" class="text-decoration-none">Hai già un account? Accedi</a>
+        <div class="text-center mt-4">
+            <span class="text-muted">Hai già un account ? </span>
+            <a href="/login" class="text-decoration-none">Login</a>
         </div>
     </div>
 </div>

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager Navigation
+@inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 
 <AuthorizeView>
     <Authorized>
@@ -14,6 +15,7 @@
 @code{
     public void BeginLogOut()
     {
-        Navigation.NavigateToLogout("authentication/logout");
+        _jwtAuthenticationStateProvider.Logout();
+        Navigation.NavigateTo("/",true);
     }
 }
