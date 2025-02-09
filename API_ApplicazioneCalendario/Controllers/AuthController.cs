@@ -40,6 +40,7 @@ namespace API_ApplicazioneCalendario.Controllers
                 return new LoginResponse(false);
 
             var token = _jwtManager.GenerateJwtToken(user);
+            HelperAuth.AppendRefreshTokenCookie(user, HttpContext.Response.Cookies);
 
             return new LoginResponse(true, token);
         }

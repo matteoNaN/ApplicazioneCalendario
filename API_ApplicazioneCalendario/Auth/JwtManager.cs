@@ -23,7 +23,7 @@ namespace API_ApplicazioneCalendario.Auth
 
             var claims = new[]
                 {
-                    new Claim(ClaimTypes.Name, user.UserName), // NOTE: this will be the "User.Identity.Name" value
+                    new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
                 };
