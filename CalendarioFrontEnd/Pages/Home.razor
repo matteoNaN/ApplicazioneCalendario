@@ -1,17 +1,39 @@
 ﻿@page "/"
+@using CalendarioFrontEnd.Components
 @using Heron.MudCalendar
+@using MudBlazor
 @inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 
 <PageTitle>Home</PageTitle>
 
+<MudGrid Justify="Justify.Center" Class="mt-4">
+    <MudItem xs="12" md="6" lg="4">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   OnClick="@(() => _showForm = !_showForm)"
+                   EndIcon="@(_showForm ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown)">
+            @(_showForm ? "Nascondi Form" : "Mostra Form Gruppi")
+        </MudButton>
+    </MudItem>
+</MudGrid>
 
+@if (_showForm)
+{
+    <MudGrid Justify="Justify.Center" Class="mt-4">
+        <MudItem xs="12" md="8" lg="6">
+            <MudPaper Class="sfondo-base pa-4 mb-4" Elevation="0">
+                <FormGruppi />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
 
-
-@code{
+@code {
+    private bool _showForm = false;
 
     protected override async Task OnInitializedAsync()
     {
-        
+        // Eventuale inizializzazione
     }
-
 }

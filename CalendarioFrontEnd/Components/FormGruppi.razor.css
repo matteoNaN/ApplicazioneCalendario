@@ -1,0 +1,27 @@
+﻿/* Mobile First Approach */
+.mud-input-outlined-mobile .mud-input-control {
+    min-height: 56px;
+}
+
+.mud-textarea-mobile textarea {
+    min-height: 100px !important;
+}
+
+.mud-button-mobile {
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+}
+
+@@media (min-width: 600px) {
+    .mud-input-outlined-mobile .mud-input-control {
+        min-height: auto;
+    }
+
+    .mud-textarea-mobile textarea {
+        min-height: 80px !important;
+    }
+
+    .mud-button-mobile {
+        padding: 10px 20px !important;
+    }
+}

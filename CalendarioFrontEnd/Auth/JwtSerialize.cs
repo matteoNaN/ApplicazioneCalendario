@@ -3,7 +3,9 @@ using System.Security.Claims;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace CalendarioFrontEnd.Auth
 {
@@ -11,10 +13,10 @@ namespace CalendarioFrontEnd.Auth
     {
         public static ClaimsPrincipal Deserialize(string jwtToken)
         {
-            var handler = new JwtSecurityTokenHandler();
+            var handler = new JsonWebTokenHandler();
 
-            
-            var jsonToken = handler.ReadJwtToken(jwtToken);
+
+            var jsonToken = handler.ReadJsonWebToken(jwtToken);
 
             
             var claims = jsonToken.Claims.ToArray();
