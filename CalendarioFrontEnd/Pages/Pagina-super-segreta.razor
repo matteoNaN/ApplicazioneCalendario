@@ -1,0 +1,23 @@
+﻿@page "/pagina-super-segreta"
+@inject IJSRuntime JSRuntime
+
+
+
+<div id="threejs-container" style="width: 50%; height: 500px;"></div>
+
+@code {
+    private async Task InitializeThreeJs()
+    {
+        
+        await JSRuntime.InvokeVoidAsync("initializeThreeJs");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            
+            await InitializeThreeJs();
+        }
+    }
+}
