@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
+@using SharedLibrary.DTOs
 
 <MudPaper Class="sfondo-base pa-4 mb-4" Elevation="0" Style="max-width: 800px; margin: 0 auto;">
     <EditForm Model="@Gruppoo" OnValidSubmit="HandleSubmit">
@@ -7,7 +8,7 @@
             <MudGrid Spacing="3" Justify="Justify.Center">
                 <!-- Nome Gruppo -->
                 <MudItem xs="12" md="6" Class="py-1">
-                    <MudTextField @bind-Value="Gruppoo.Nome"
+                    <MudTextField @bind-Value="Gruppoo.Name"
                                   Label="Nome Gruppo"
                                   Variant="Variant.Outlined"
                                   Required="true"
@@ -18,7 +19,7 @@
 
                 <!-- Descrizione -->
                 <MudItem xs="12" md="6" Class="py-1">
-                    <MudTextField @bind-Value="Gruppoo.Descrizione"
+                    <MudTextField @bind-Value="Gruppoo.Description"
                                   Label="Descrizione"
                                   Variant="Variant.Outlined"
                                   Lines="3"
@@ -46,20 +47,20 @@
     </EditForm>
 </MudPaper>
 @code {
-    private GruppooModel Gruppoo { get; set; } = new GruppooModel();
+    private CreazioneGruppoDTO Gruppoo { get; set; } = new CreazioneGruppoDTO();
 
     private void HandleSubmit()
     {
         // Logica per il salvataggio del gruppo
-        Console.WriteLine($"Gruppo creato: {Gruppoo.Nome} - {Gruppoo.Descrizione}");
+        Console.WriteLine($"Gruppo creato: {Gruppoo.Name} - {Gruppoo.Description}");
+
+
 
         // Resetta il form dopo l'invio
-        Gruppoo = new GruppooModel();
+        Gruppoo = new CreazioneGruppoDTO();
     }
 
-    public class GruppooModel
-    {
-        public string Nome { get; set; }
-        public string Descrizione { get; set; }
-    }
+
+
+
 }

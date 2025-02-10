@@ -33,7 +33,7 @@ namespace CalendarioFrontEnd
             var appUri = new Uri(builder.HostEnvironment.BaseAddress);
 
             builder.Services.AddScoped(provider => new JwtTokenMessageHandler(appUri, provider.GetRequiredService<JwtAuthenticationStateProvider>()));
-            builder.Services.AddHttpClient("https://localhost:7163/api/", client => client.BaseAddress = appUri)
+            builder.Services.AddHttpClient("ApiClient", client => client.BaseAddress = appUri)
                 .AddHttpMessageHandler<JwtTokenMessageHandler>();
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyApp.ServerAPI"));
 
