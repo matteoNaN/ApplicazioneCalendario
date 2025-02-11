@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SharedLibrary.DTOs;
 using SharedLibrary.Helpers.ApiResponse;
 using SharedLibrary.Models.IdentityOverrides;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,20 +33,44 @@ namespace API_ApplicazioneCalendario.Controllers
 
             if (string.IsNullOrEmpty(jti))
             {
-                return Unauthorized(new Result(false, error: "errore di authentificazione"));
+                return Unauthorized("errore di authentificazione");
             }
 
             var user = await _userManager.FindByIdAsync(jti);
 
             if (user == null)
             {
-                return Unauthorized(new Result(false, error: "User non trovato"));
+                return Unauthorized("User non trovato");
             }
 
             // Ottieni i gruppi dell'utente
             var res = await _gruppiService.GetGruppiUtente(user);
 
             return Ok(res);
+        }
+
+
+        [HttpPost]
+        
+        public async Task<IActionResult> AggiungiGruppo([FromBody] CreazioneGruppoDTO gruppoToAdd)
+        {
+            var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+            if (string.IsNullOrEmpty(jti))
+            {
+                return Unauthorized("errore di authentificazione");
+            }
+
+
+            var res = await _gruppiService.CreaGruppo(jti, gruppoToAdd);
+
+            if(!res.IsSuccess)
+            {
+                return BadRequest(res.Error.Message);
+            }
+
+            return Ok();
+
         }
 
 

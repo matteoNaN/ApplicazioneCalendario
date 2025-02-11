@@ -1,30 +1,34 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using CalendarioFrontEnd.Services.Http
+@using CalendarioFrontEnd.Utilities
+@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @using SharedLibrary.DTOs
+@inject GruppiHttpClass _gruppiService
+
 
 <MudPaper Class="sfondo-base pa-4 mb-4" Elevation="0" Style="max-width: 800px; margin: 0 auto;">
-    <EditForm Model="@Gruppoo" OnValidSubmit="HandleSubmit">
+    <EditForm Model="@Gruppoo">
         <MudForm>
             <MudGrid Spacing="3" Justify="Justify.Center">
                 <!-- Nome Gruppo -->
                 <MudItem xs="12" md="6" Class="py-1">
                     <MudTextField @bind-Value="Gruppoo.Name"
-                                  Label="Nome Gruppo"
-                                  Variant="Variant.Outlined"
-                                  Required="true"
-                                  RequiredError="Il nome è obbligatorio"
-                                  Immediate="true"
-                                  Class="mud-input-outlined-mobile" />
+                    Label="Nome Gruppo"
+                    Variant="Variant.Outlined"
+                    Required="true"
+                    RequiredError="Il nome è obbligatorio"
+                    Immediate="true"
+                    Class="mud-input-outlined-mobile" />
                 </MudItem>
 
                 <!-- Descrizione -->
                 <MudItem xs="12" md="6" Class="py-1">
                     <MudTextField @bind-Value="Gruppoo.Description"
-                                  Label="Descrizione"
-                                  Variant="Variant.Outlined"
-                                  Lines="3"
-                                  Multiline="true"
-                                  Class="mud-textarea-mobile" />
+                    Label="Descrizione"
+                    Variant="Variant.Outlined"
+                    Lines="3"
+                    Multiline="true"
+                    Class="mud-textarea-mobile" />
                 </MudItem>
 
                 <!-- Pulsanti -->
@@ -32,10 +36,11 @@
                     <MudGrid Justify="Justify.Center" Spacing="3">
                         <MudItem xs="12" md="4">
                             <MudButton Variant="Variant.Filled"
-                                       Color="Color.Primary"
-                                       ButtonType="ButtonType.Submit"
-                                       FullWidth="true"
-                                       Class="mud-button-mobile">
+                            Color="Color.Primary"
+                            ButtonType="ButtonType.Submit"
+                            FullWidth="true"
+                            OnClick="HandleSubmit"
+                            Class="mud-button-mobile">
                                 <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
                                 Salva Gruppo
                             </MudButton>
@@ -49,12 +54,18 @@
 @code {
     private CreazioneGruppoDTO Gruppoo { get; set; } = new CreazioneGruppoDTO();
 
-    private void HandleSubmit()
+
+
+
+    private async Task HandleSubmit()
     {
         // Logica per il salvataggio del gruppo
         Console.WriteLine($"Gruppo creato: {Gruppoo.Name} - {Gruppoo.Description}");
 
+        var res = await _gruppiService.AggiungiGruppo(Gruppoo);
+        var snackResult = ParseResultToSnackbar.Parse(res);
 
+        Snackbar.Add(snackResult.Message, snackResult.Severity);
 
         // Resetta il form dopo l'invio
         Gruppoo = new CreazioneGruppoDTO();

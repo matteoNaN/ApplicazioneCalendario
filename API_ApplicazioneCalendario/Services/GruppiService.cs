@@ -1,4 +1,6 @@
-﻿using SharedLibrary.Helpers.ApiResponse;
+﻿using SharedLibrary.DataAccess;
+using SharedLibrary.DTOs;
+using SharedLibrary.Helpers.ApiResponse;
 using SharedLibrary.Models;
 using SharedLibrary.Models.IdentityOverrides;
 using System.Reflection.Metadata;
@@ -9,7 +11,7 @@ namespace API_ApplicazioneCalendario.Services
     {
         public Task<Result<List<Gruppi>>> GetGruppiUtente(ApplicationUser user);
 
-        public Task<Result> CreaGruppo(ApplicationUser user, Gruppi gruppi);
+        public Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppi);
 
         public Task<Result> EsciDaGruppo(ApplicationUser applicationUser, Gruppi gruppi);
 
@@ -20,9 +22,32 @@ namespace API_ApplicazioneCalendario.Services
     }
     public class GruppiService : IGruppiService
     {
-        public Task<Result> CreaGruppo(ApplicationUser user, Gruppi gruppi)
+        private readonly ApplicationDbContext _context;
+
+        public GruppiService(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppoDTO)
+        {
+            if(string.IsNullOrEmpty(gruppoDTO.Name))
+            {
+                return new Result(isSuccess: false, "Errore nella creazione del gruppo, Nome Mancante");
+            }
+            var gruppo = new Gruppi()
+            {
+                Id = Guid.NewGuid(),
+                Name = gruppoDTO.Name,
+                Description = gruppoDTO.Description,
+                CreatorUserId = user
+
+            };
+
+           await _context.Gruppi.AddAsync(gruppo);
+          
+           return Result.Success();
+            
         }
 
         public Task<Result> EntraInGruppo(ApplicationUser appUser, Gruppi gruppi)

@@ -1,5 +1,6 @@
 
 using API_ApplicazioneCalendario.Auth;
+using API_ApplicazioneCalendario.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,14 +63,19 @@ namespace API_ApplicazioneCalendario
             {
                 options.AddPolicy("AllowBlazorClient", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7042", "http://localhost:5220")
+                    policy.WithOrigins("https://localhost:7042")
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 });
             });
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+            #region /////////////////////////////// SERVIZI PER I DATI
+            builder.Services.AddScoped<IGruppiService, GruppiService>();
+            #endregion
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
@@ -82,10 +88,10 @@ namespace API_ApplicazioneCalendario
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowBlazorClient");
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("AllowBlazorClient");
 
             app.MapControllers();
 
