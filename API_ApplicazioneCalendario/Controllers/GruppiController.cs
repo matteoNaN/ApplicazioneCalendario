@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.DTOs;
-using SharedLibrary.Helpers.ApiResponse;
 using SharedLibrary.Models.IdentityOverrides;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
+
 
 namespace API_ApplicazioneCalendario.Controllers
 {
+   
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class GruppiController : ControllerBase
@@ -25,7 +25,6 @@ namespace API_ApplicazioneCalendario.Controllers
 
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetGruppiUtente()
         {
             // Estrai il "jti" (JWT ID) dal token
@@ -49,9 +48,8 @@ namespace API_ApplicazioneCalendario.Controllers
             return Ok(res);
         }
 
-
         [HttpPost]
-        
+        [Authorize]
         public async Task<IActionResult> AggiungiGruppo([FromBody] CreazioneGruppoDTO gruppoToAdd)
         {
             var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;

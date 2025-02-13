@@ -4,74 +4,51 @@
 @using MudBlazor
 @using SharedLibrary.DTOs
 @inject GruppiHttpClass _gruppiService
+@inject NavigationManager NavigationManager
 
 
-<MudPaper Class="sfondo-base pa-4 mb-4" Elevation="0" Style="max-width: 800px; margin: 0 auto;">
-    <EditForm Model="@Gruppoo">
-        <MudForm>
-            <MudGrid Spacing="3" Justify="Justify.Center">
-                <!-- Nome Gruppo -->
-                <MudItem xs="12" md="6" Class="py-1">
-                    <MudTextField @bind-Value="Gruppoo.Name"
-                    Label="Nome Gruppo"
-                    Variant="Variant.Outlined"
-                    Required="true"
-                    RequiredError="Il nome è obbligatorio"
-                    Immediate="true"
-                    Class="mud-input-outlined-mobile" />
-                </MudItem>
+<h3>Crea un Nuovo Gruppo</h3>
 
-                <!-- Descrizione -->
-                <MudItem xs="12" md="6" Class="py-1">
-                    <MudTextField @bind-Value="Gruppoo.Description"
-                    Label="Descrizione"
-                    Variant="Variant.Outlined"
-                    Lines="3"
-                    Multiline="true"
-                    Class="mud-textarea-mobile" />
-                </MudItem>
+<EditForm Model="@Gruppoo" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-                <!-- Pulsanti -->
-                <MudItem xs="12" Class="mt-3">
-                    <MudGrid Justify="Justify.Center" Spacing="3">
-                        <MudItem xs="12" md="4">
-                            <MudButton Variant="Variant.Filled"
-                            Color="Color.Primary"
-                            ButtonType="ButtonType.Submit"
-                            FullWidth="true"
-                            OnClick="HandleSubmit"
-                            Class="mud-button-mobile">
-                                <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
-                                Salva Gruppo
-                            </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-    </EditForm>
-</MudPaper>
+    <div class="form-group">
+        <label for="Name">Nome Gruppo</label>
+        <InputText id="Name" class="form-control" @bind-Value="Gruppoo.Name" />
+        <ValidationMessage For="@(() => Gruppoo.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Descrizione</label>
+        <InputTextArea id="Description" class="form-control" @bind-Value="Gruppoo.Description" />
+        <ValidationMessage For="@(() => Gruppoo.Description)" />
+    </div>
+
+    <div class="button-container">
+        <button type="submit" class="submit-button">Salva Gruppo</button>
+    </div>
+</EditForm>
+
 @code {
     private CreazioneGruppoDTO Gruppoo { get; set; } = new CreazioneGruppoDTO();
 
-
-
-
     private async Task HandleSubmit()
     {
-        // Logica per il salvataggio del gruppo
-        Console.WriteLine($"Gruppo creato: {Gruppoo.Name} - {Gruppoo.Description}");
+        try
+        {
+            // Logica per il salvataggio del gruppo
+            Console.WriteLine($"Gruppo creato: {Gruppoo.Name} - {Gruppoo.Description}");
 
-        var res = await _gruppiService.AggiungiGruppo(Gruppoo);
-        var snackResult = ParseResultToSnackbar.Parse(res);
+            var res = await _gruppiService.AggiungiGruppo(Gruppoo);
+            var snackResult = ParseResultToSnackbar.Parse(res);
 
-        Snackbar.Add(snackResult.Message, snackResult.Severity);
+            Snackbar.Add(snackResult.Message, snackResult.Severity);
 
-        // Resetta il form dopo l'invio
-        Gruppoo = new CreazioneGruppoDTO();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Errore: {ex.Message}", Severity.Error);
+        }
     }
-
-
-
-
 }

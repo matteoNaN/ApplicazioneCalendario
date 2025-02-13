@@ -1,8 +1,11 @@
 ﻿@page "/"
 @using CalendarioFrontEnd.Components
+@using CalendarioFrontEnd.Services.Http
 @using Heron.MudCalendar
 @using MudBlazor
+@using SharedLibrary.Models
 @inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
+@inject GruppiHttpClass _gruppiService
 
 <PageTitle>Home</PageTitle>
 
@@ -32,8 +35,15 @@
 @code {
     private bool _showForm = false;
 
+    public List<Gruppi> gruppiList;
+
     protected override async Task OnInitializedAsync()
     {
-        // Eventuale inizializzazione
+        var res = await _gruppiService.GetGruppiUtente();
+
+        if (res.IsSuccess)
+        {
+            gruppiList = res.Data;
+        }
     }
 }

@@ -44,9 +44,11 @@ namespace API_ApplicazioneCalendario.Services
 
             };
 
-           await _context.Gruppi.AddAsync(gruppo);
+            await _context.Gruppi.AddAsync(gruppo);
+            await _context.SaveChangesAsync();
           
-           return Result.Success();
+          
+            return Result.Success();
             
         }
 

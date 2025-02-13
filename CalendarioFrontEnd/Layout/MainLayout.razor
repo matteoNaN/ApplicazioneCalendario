@@ -40,17 +40,18 @@ else if (!isLogged && IsLoginPage())
     <Register></Register>
 }
 
-@code
-{
+@code {
     private bool isLogged = false;
 
     protected async override Task OnInitializedAsync()
     {
         var user = (await _jwtAuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         isLogged = user.Identity is not null && user.Identity.IsAuthenticated;
-        
 
-        if(!isLogged && !IsRegisterPage())
+        Console.WriteLine("Stato di autenticazione: " + isLogged);
+
+        // Esegui il controllo di login solo se non sei già nella pagina di login o registrazione
+        if (!isLogged && !IsLoginPage() && !IsRegisterPage())
         {
             _navManager.NavigateTo("/login");
         }

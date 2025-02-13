@@ -2,6 +2,7 @@
 using SharedLibrary.Helpers.Api;
 using SharedLibrary.Helpers.ApiResponse;
 using SharedLibrary.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -41,6 +42,34 @@ namespace CalendarioFrontEnd.Services.Http
 
             return Result.Failure(errorMessage);
 
+
+        }
+
+        public async Task<Result<List<Gruppi>>> GetGruppiUtente()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/api/{ControllerConstants.GruppiController}AggiungiGruppo");
+
+            var client = _httpClientFactory.CreateClient("ApiClient");
+
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                var gruppi = JsonSerializer.Deserialize<List<Gruppi>>(responseContent);
+
+                if(gruppi is null)
+                {
+                    return Result.Failure<List<Gruppi>>("errore nei dati");
+                }
+
+                return Result.Success<List<Gruppi>>(gruppi);
+            }
+
+            var errorMessage = await response.Content.ReadAsStringAsync();
+
+            return Result.Failure<List<Gruppi>>(errorMessage);
 
         }
 
