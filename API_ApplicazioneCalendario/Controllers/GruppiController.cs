@@ -25,6 +25,7 @@ namespace API_ApplicazioneCalendario.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetGruppiUtente()
         {
             // Estrai il "jti" (JWT ID) dal token
@@ -35,17 +36,11 @@ namespace API_ApplicazioneCalendario.Controllers
                 return Unauthorized("errore di authentificazione");
             }
 
-            var user = await _userManager.FindByIdAsync(jti);
-
-            if (user == null)
-            {
-                return Unauthorized("User non trovato");
-            }
 
             // Ottieni i gruppi dell'utente
-            var res = await _gruppiService.GetGruppiUtente(user);
+            var res = await _gruppiService.GetGruppiUtente(jti);
 
-            return Ok(res);
+            return Ok(res.Data);
         }
 
         [HttpPost]

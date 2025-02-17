@@ -1,15 +1,17 @@
-﻿using SharedLibrary.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using SharedLibrary.DataAccess;
 using SharedLibrary.DTOs;
 using SharedLibrary.Helpers.ApiResponse;
 using SharedLibrary.Models;
 using SharedLibrary.Models.IdentityOverrides;
+using System.Globalization;
 using System.Reflection.Metadata;
 
 namespace API_ApplicazioneCalendario.Services
 {
     public interface IGruppiService
     {
-        public Task<Result<List<Gruppi>>> GetGruppiUtente(ApplicationUser user);
+        public Task<Result<List<GruppoDTO>>> GetGruppiUtente(string userId);
 
         public Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppi);
 
@@ -44,6 +46,14 @@ namespace API_ApplicazioneCalendario.Services
 
             };
 
+            var GruppoUser = new GruppoUser()
+            {
+                UserId = user,
+                GruppoId = gruppo.Id,
+                CreationDate = DateTime.Now
+            };
+
+            await _context.GruppoUsers.AddAsync(GruppoUser);
             await _context.Gruppi.AddAsync(gruppo);
             await _context.SaveChangesAsync();
           
@@ -62,9 +72,41 @@ namespace API_ApplicazioneCalendario.Services
             throw new NotImplementedException();
         }
 
-        public Task<Result<List<Gruppi>>> GetGruppiUtente(ApplicationUser user)
+        public async Task<Result<List<GruppoDTO>>> GetGruppiUtente(string userId)
         {
-            throw new NotImplementedException();
+            var gruppiList = await _context.Gruppi
+                .Include(gr => gr.CreatorUser)
+                .Select(gr => new GruppoDTO
+                {
+                    Id = gr.Id.ToString(),
+                    Name = gr.Name,
+                    Description = gr.Description,
+                    CreatorUser = new ApplicationUserDTO
+                    {
+                        Id = gr.CreatorUserId,
+                        Email = gr.CreatorUser.Email,
+                        Name = gr.CreatorUser.UserName
+                    },
+                    JoinedUser = _context.GruppoUsers
+                        .Where(gu => gu.GruppoId == gr.Id)
+                        .Select(gu => new ApplicationUserDTO
+                        {
+                            Id = gu.User.Id,
+                            Email = gu.User.Email,
+                            Name = gu.User.UserName
+                        }).ToList()
+                }).ToListAsync();
+
+
+
+
+
+            if (gruppiList is null)
+            {
+                return Result.Failure<List<GruppoDTO>>(new Error("errore nella ricerca dei gruppi utente"));
+            }
+
+            return Result.Success(gruppiList);
         }
     }
 }

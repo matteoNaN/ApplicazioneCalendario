@@ -45,9 +45,9 @@ namespace CalendarioFrontEnd.Services.Http
 
         }
 
-        public async Task<Result<List<Gruppi>>> GetGruppiUtente()
+        public async Task<Result<List<GruppoDTO>>> GetGruppiUtente()
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/api/{ControllerConstants.GruppiController}AggiungiGruppo");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/{ControllerConstants.GruppiController}GetGruppiUtente");
 
             var client = _httpClientFactory.CreateClient("ApiClient");
 
@@ -57,19 +57,24 @@ namespace CalendarioFrontEnd.Services.Http
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
 
-                var gruppi = JsonSerializer.Deserialize<List<Gruppi>>(responseContent);
 
-                if(gruppi is null)
+                var gruppi = JsonSerializer.Deserialize<List<GruppoDTO>>(responseContent, new JsonSerializerOptions
                 {
-                    return Result.Failure<List<Gruppi>>("errore nei dati");
+                    PropertyNameCaseInsensitive = true
+                });
+
+
+                if (gruppi is null)
+                {
+                    return Result.Failure<List<GruppoDTO>>("errore nei dati");
                 }
 
-                return Result.Success<List<Gruppi>>(gruppi);
+                return Result.Success<List<GruppoDTO>>(gruppi);
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync();
 
-            return Result.Failure<List<Gruppi>>(errorMessage);
+            return Result.Failure<List<GruppoDTO>>(errorMessage);
 
         }
 

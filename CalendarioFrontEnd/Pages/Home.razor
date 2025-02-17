@@ -3,47 +3,141 @@
 @using CalendarioFrontEnd.Services.Http
 @using Heron.MudCalendar
 @using MudBlazor
+@using SharedLibrary.DTOs
 @using SharedLibrary.Models
 @inject JwtAuthenticationStateProvider _jwtAuthenticationStateProvider
 @inject GruppiHttpClass _gruppiService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>I miei gruppi</PageTitle>
 
-<MudGrid Justify="Justify.Center" Class="mt-4">
-    <MudItem xs="12" md="6" lg="4">
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   FullWidth="true"
-                   OnClick="@(() => _showForm = !_showForm)"
-                   EndIcon="@(_showForm ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown)">
-            @(_showForm ? "Nascondi Form" : "Mostra Form Gruppi")
-        </MudButton>
-    </MudItem>
-</MudGrid>
+<style>
+    .group-card {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    @@media (max-width: 600px) {
+        .mobile-padding {
+            padding: 8px;
+        }
+        
+        .group-card {
+            border-radius: 24px;
+            margin: 8px 0;
+        }
+        
+        .fab-button {
+            bottom: 16px !important;
+            right: 16px !important;
+            width: 56px;
+            height: 56px;
+        }
+    }
+</style>
+
+<MudIconButton Icon="@Icons.Material.Filled.Add" 
+               Color="Color.Primary" 
+               Variant="Variant.Filled" 
+               Class="fab-button"
+               Style="position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 64px; height: 64px;"
+               OnClick="() => _showForm = true" />
 
 @if (_showForm)
 {
-    <MudGrid Justify="Justify.Center" Class="mt-4">
-        <MudItem xs="12" md="8" lg="6">
-            <MudPaper Class="sfondo-base pa-4 mb-4" Elevation="0">
-                <FormGruppi />
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
+    <MudDialog @bind-IsVisible="@_showForm" MaxWidth="MaxWidth.Small" FullWidth="true">
+        <DialogContent>
+            <FormGruppi OnSuccess="HandleFormSuccess" />
+        </DialogContent>
+    </MudDialog>
 }
+
+<MudContainer Class="mt-4 mobile-padding">
+    @if (gruppiList == null)
+    {
+        <MudGrid Justify="Justify.Center" Class="text-center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </MudGrid>
+    }
+    else if (!gruppiList.Any())
+    {
+        <MudGrid Justify="Justify.Center" Class="text-center">
+            <MudText Typo="Typo.h6" Color="Color.Secondary">Non sei iscritto a nessun gruppo</MudText>
+        </MudGrid>
+    }
+    else
+    {
+        <MudGrid Spacing="3" Justify="Justify.Center">
+            <MudItem xs="12" Class="mb-2 px-2">
+                <MudText Typo="Typo.h4" Color="Color.Primary" Class="text-center mb-4">I tuoi gruppi</MudText>
+            </MudItem>
+
+            @foreach (var gruppo in gruppiList)
+            {
+                <MudItem xs="12" sm="6" md="6" lg="4" Class="px-2">
+                    <MudCard Class="group-card h-100" Elevation="8" Hover="true">
+                        <MudCardHeader Class="px-4 pt-4">
+                            <MudAvatar Color="Color.Primary" Style="border-radius: 12px; width: 48px; height: 48px;">
+                                @(gruppo.Name?.FirstOrDefault() ?? '?')
+                            </MudAvatar>
+                            <MudCardHeaderContent>
+                                <MudText Typo="Typo.h6" Class="mb-1">@gruppo.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-truncate">
+                                    Creato da: @(gruppo.CreatorUser?.GetName() ?? "Utente sconosciuto")
+                                </MudText>
+                            </MudCardHeaderContent>
+                        </MudCardHeader>
+
+                        <MudCardContent Class="px-4 pb-2">
+                            <MudText Typo="Typo.body2" Class="my-2 text-truncate-2-lines">@gruppo.Description</MudText>
+                            <MudChipSet T="string" Class="mt-2">
+                                <MudChip Icon="@Icons.Material.Filled.Group" Color="Color.Secondary" Class="py-1">
+                                    Membri: @gruppo.JoinedUser?.Count.ToString()
+                                </MudChip>
+                            </MudChipSet>
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-3">
+                            <MudButton Variant="Variant.Text"
+                                   Color="Color.Primary"
+                                   EndIcon="@Icons.Material.Filled.ExitToApp"
+                                   Size="Size.Small"
+                                   Class="mobile-button">
+                                Esci
+                            </MudButton>
+                            <MudSpacer />
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" 
+                                       Color="Color.Secondary" 
+                                       Size="Size.Small"
+                                       Class="mobile-button" />
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
 
 @code {
     private bool _showForm = false;
-
-    public List<Gruppi> gruppiList;
+    public List<GruppoDTO> gruppiList;
 
     protected override async Task OnInitializedAsync()
     {
-        var res = await _gruppiService.GetGruppiUtente();
+        await LoadGroups();
+    }
 
+    private async Task LoadGroups()
+    {
+        var res = await _gruppiService.GetGruppiUtente();
         if (res.IsSuccess)
         {
             gruppiList = res.Data;
         }
+    }
+
+    private void HandleFormSuccess()
+    {
+        _showForm = false;
+        InvokeAsync(LoadGroups);
     }
 }
