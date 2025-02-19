@@ -3,47 +3,59 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @using SharedLibrary.DTOs
+@using SharedLibrary.Helpers.Validators
 @inject GruppiHttpClass _gruppiService
 @inject NavigationManager NavigationManager
 
 
-<h3>Crea un Nuovo Gruppo</h3>
+<h3 class="custom-form-title">Crea un Nuovo Gruppo</h3>
 
-<EditForm Model="@Gruppoo" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="form-group">
-        <label for="Name">Nome Gruppo</label>
-        <InputText id="Name" class="form-control" @bind-Value="Gruppoo.Name" />
-        <ValidationMessage For="@(() => Gruppoo.Name)" />
+<form class="custom-form-container" @onsubmit="HandleSubmit">
+    <div class="custom-form-group">
+        <label for="Name" class="custom-input-label">Nome Gruppo</label>
+        <input type="text" id="Name" class="custom-form-input" @bind="Gruppoo.Name" />
     </div>
 
-    <div class="form-group">
-        <label for="Description">Descrizione</label>
-        <InputTextArea id="Description" class="form-control" @bind-Value="Gruppoo.Description" />
-        <ValidationMessage For="@(() => Gruppoo.Description)" />
+    <div class="custom-form-group">
+        <label for="Description" class="custom-input-label">Descrizione</label>
+        <textarea id="Description" class="custom-form-input custom-textarea" @bind="Gruppoo.Description"></textarea>
     </div>
 
-    <div class="button-container">
-        <button type="submit" class="submit-button">Salva Gruppo</button>
+    <div class="custom-form-actions">
+        <input type="submit" value="💾 Salva Gruppo" class="custom-submit-button" />
     </div>
-</EditForm>
+</form>
+
+
 
 @code {
     private CreazioneGruppoDTO Gruppoo { get; set; } = new CreazioneGruppoDTO();
+
+    [Parameter]
+    public EventCallback OnSuccessfullSubmit { get; set;}
 
     private async Task HandleSubmit()
     {
         try
         {
-            // Logica per il salvataggio del gruppo
-            Console.WriteLine($"Gruppo creato: {Gruppoo.Name} - {Gruppoo.Description}");
+
+            var validationResult = IsObjectValid<CreazioneGruppoDTO>.CheckValidation(Gruppoo);
+            if(!validationResult.IsSuccess)
+            {
+                var message = validationResult.Data.GetValidationMessage();
+                Snackbar.Add($"Errore: {message}", Severity.Error);
+                return;
+            }
 
             var res = await _gruppiService.AggiungiGruppo(Gruppoo);
-            var snackResult = ParseResultToSnackbar.Parse(res);
+            var snackResult = ParseResultToSnackbar.Parse(res , "gruppo creato con successo 👍");
 
             Snackbar.Add(snackResult.Message, snackResult.Severity);
+
+            if(OnSuccessfullSubmit.HasDelegate)
+            {
+                await OnSuccessfullSubmit.InvokeAsync();
+            }
 
         }
         catch (Exception ex)

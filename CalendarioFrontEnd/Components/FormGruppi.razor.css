@@ -1,57 +1,99 @@
-﻿/* Mobile First Approach */
-.mud-input-outlined-mobile .mud-input-control {
-    min-height: 56px;
+﻿/* ======= Stile Generale del Form ======= */
+.custom-form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f8f9fa; /* Sfondo chiaro per migliore contrasto */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.mud-textarea-mobile textarea {
-    min-height: 100px !important;
+/* ======= Titolo ======= */
+.custom-form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 15px;
 }
 
-.mud-button-mobile {
-    border-radius: 8px !important;
-    padding: 12px 24px !important;
+/* ======= Gruppi di Input ======= */
+.custom-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-@@media (min-width: 600px) {
-    .mud-input-outlined-mobile .mud-input-control {
-        min-height: auto;
+.custom-input-label {
+    font-weight: 600;
+    color: #444;
+}
+
+/* ======= Input e Textarea ======= */
+.custom-form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #007bff;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+    /* Effetto Focus sugli Input */
+    .custom-form-input:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+        outline: none;
     }
 
-    .mud-textarea-mobile textarea {
-        min-height: 80px !important;
-    }
-
-    .mud-button-mobile {
-        padding: 10px 20px !important;
-    }
+/* Stile per la Textarea */
+.custom-textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
-.button-container {
+/* ======= Pulsante di Invio ======= */
+.custom-form-actions {
     display: flex;
     justify-content: center;
-    margin-top: 1.5rem;
+    margin-top: 10px;
 }
 
-.submit-button {
-    padding: 0.75rem 2rem;
-    background: #6366f1;
-    color: white;
+/* Bottone personalizzato (senza Blazor) */
+.custom-submit-button {
+    background-color: #007bff;
+    color: #fff;
     border: none;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: bold;
     border-radius: 6px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
 }
 
-    .submit-button:hover {
-        background: #4f46e5;
-        transform: translateY(-1px);
+    .custom-submit-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.02);
     }
 
-@@media (max-width: 768px) {
-    .submit-button {
-        width: 100%;
-        padding: 1rem;
+/* ======= Mobile Friendly ======= */
+@media (max-width: 600px) {
+    .custom-form-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .custom-form-title {
+        font-size: 20px;
+    }
+
+    .custom-submit-button {
+        padding: 12px;
     }
 }

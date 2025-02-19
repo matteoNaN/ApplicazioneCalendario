@@ -5,8 +5,16 @@ using SharedLibrary.Models.IdentityOverrides;
 
 namespace SharedLibrary.DataAccess
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+
+        }
+
+        
+
         public DbSet<Gruppi> Gruppi { get; set; }
         public DbSet<GruppoUser> GruppoUsers { get; set; }
         public DbSet<Impegno> Impegni { get; set; }

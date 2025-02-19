@@ -15,7 +15,7 @@ namespace SharedLibrary.Models
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(10000)]
         public string Description { get; set; }
 
         // La chiave primaria di ApplicationUser è string, non int

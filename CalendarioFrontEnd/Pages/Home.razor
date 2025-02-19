@@ -10,48 +10,25 @@
 
 <PageTitle>I miei gruppi</PageTitle>
 
-<style>
-    .group-card {
-        border-radius: 16px;
-        overflow: hidden;
-    }
-
-    @@media (max-width: 600px) {
-        .mobile-padding {
-            padding: 8px;
-        }
-        
-        .group-card {
-            border-radius: 24px;
-            margin: 8px 0;
-        }
-        
-        .fab-button {
-            bottom: 16px !important;
-            right: 16px !important;
-            width: 56px;
-            height: 56px;
-        }
-    }
-</style>
 
 <MudIconButton Icon="@Icons.Material.Filled.Add" 
-               Color="Color.Primary" 
-               Variant="Variant.Filled" 
-               Class="fab-button"
-               Style="position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 64px; height: 64px;"
-               OnClick="() => _showForm = true" />
+Color="Color.Primary" 
+Variant="Variant.Filled" 
+Class="fab-button"
+Style="position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 64px; height: 64px;"
+OnClick="() => HandleFormVisibility()" />
 
-@if (_showForm)
-{
-    <MudDialog @bind-IsVisible="@_showForm" MaxWidth="MaxWidth.Small" FullWidth="true">
-        <DialogContent>
-            <FormGruppi OnSuccess="HandleFormSuccess" />
-        </DialogContent>
-    </MudDialog>
-}
+
 
 <MudContainer Class="mt-4 mobile-padding">
+
+    @if(_showForm)
+    {
+
+        <FormGruppi OnSuccessfullSubmit="HandleFormSuccess" />
+    }
+
+
     @if (gruppiList == null)
     {
         <MudGrid Justify="Justify.Center" Class="text-center">
@@ -79,12 +56,12 @@
                             <MudAvatar Color="Color.Primary" Style="border-radius: 12px; width: 48px; height: 48px;">
                                 @(gruppo.Name?.FirstOrDefault() ?? '?')
                             </MudAvatar>
-                            <MudCardHeaderContent>
+                            <MudCardContent>
                                 <MudText Typo="Typo.h6" Class="mb-1">@gruppo.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-truncate">
                                     Creato da: @(gruppo.CreatorUser?.GetName() ?? "Utente sconosciuto")
                                 </MudText>
-                            </MudCardHeaderContent>
+                            </MudCardContent>
                         </MudCardHeader>
 
                         <MudCardContent Class="px-4 pb-2">
@@ -98,17 +75,17 @@
 
                         <MudCardActions Class="px-4 pb-3">
                             <MudButton Variant="Variant.Text"
-                                   Color="Color.Primary"
-                                   EndIcon="@Icons.Material.Filled.ExitToApp"
-                                   Size="Size.Small"
-                                   Class="mobile-button">
+                            Color="Color.Primary"
+                            EndIcon="@Icons.Material.Filled.ExitToApp"
+                            Size="Size.Small"
+                            Class="mobile-button">
                                 Esci
                             </MudButton>
                             <MudSpacer />
                             <MudIconButton Icon="@Icons.Material.Filled.Info" 
-                                       Color="Color.Secondary" 
-                                       Size="Size.Small"
-                                       Class="mobile-button" />
+                            Color="Color.Secondary" 
+                            Size="Size.Small"
+                            Class="mobile-button" />
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -135,9 +112,16 @@
         }
     }
 
-    private void HandleFormSuccess()
+    private async Task HandleFormSuccess()
     {
         _showForm = false;
-        InvokeAsync(LoadGroups);
+        await InvokeAsync(LoadGroups);
+        StateHasChanged();
+    }
+
+    private void HandleFormVisibility()
+    {
+        _showForm = !_showForm;
+        return;
     }
 }
