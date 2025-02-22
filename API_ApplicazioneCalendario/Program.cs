@@ -113,7 +113,11 @@ namespace API_ApplicazioneCalendario
 
             });
 
+           
 
+            builder.AddServiceDefaults();
+            builder.Services.AddHealthChecks();
+            builder.Services.AddOpenTelemetry();
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
@@ -141,7 +145,7 @@ namespace API_ApplicazioneCalendario
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.MapDefaultEndpoints();
             app.MapControllers();
 
             app.Run();

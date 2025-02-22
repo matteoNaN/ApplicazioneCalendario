@@ -19,6 +19,11 @@ namespace SharedLibrary.DataAccess
         public DbSet<GruppoUser> GruppoUsers { get; set; }
         public DbSet<Impegno> Impegni { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

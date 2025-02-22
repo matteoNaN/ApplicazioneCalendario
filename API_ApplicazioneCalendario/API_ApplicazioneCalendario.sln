@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarioFrontEnd", "..\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "..\SharedLibrary\SharedLibrary.csproj", "{EBC880E2-7984-4C11-8850-712FE72986AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "..\ServiceDefaults\ServiceDefaults.csproj", "{ABCFE25B-5108-4145-9D1B-9A04A26F474A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "..\AppHost\AppHost.csproj", "{0F950D10-71AE-48CE-9CE4-1151DB4C41C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +31,19 @@ Global
 		{EBC880E2-7984-4C11-8850-712FE72986AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBC880E2-7984-4C11-8850-712FE72986AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBC880E2-7984-4C11-8850-712FE72986AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABCFE25B-5108-4145-9D1B-9A04A26F474A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABCFE25B-5108-4145-9D1B-9A04A26F474A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABCFE25B-5108-4145-9D1B-9A04A26F474A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCFE25B-5108-4145-9D1B-9A04A26F474A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F950D10-71AE-48CE-9CE4-1151DB4C41C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F950D10-71AE-48CE-9CE4-1151DB4C41C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F950D10-71AE-48CE-9CE4-1151DB4C41C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F950D10-71AE-48CE-9CE4-1151DB4C41C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09FB3CCA-365C-43A9-9481-0703625F8D8C}
 	EndGlobalSection
 EndGlobal

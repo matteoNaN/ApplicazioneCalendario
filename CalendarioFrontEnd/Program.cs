@@ -48,7 +48,7 @@ namespace CalendarioFrontEnd
 
             builder.Services.AddAuthorizationCore();
 
-
+           
 
             builder.Services.AddMudServices(config =>
             {
