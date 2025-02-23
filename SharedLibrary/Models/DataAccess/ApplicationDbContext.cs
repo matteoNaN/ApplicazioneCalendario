@@ -60,6 +60,12 @@ namespace SharedLibrary.DataAccess
                 .WithMany()
                 .HasForeignKey(i => i.GruppoId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Gruppi>()
+                .HasOne(g => g.Calendario)
+                .WithOne(c => c.Gruppo)
+                .HasForeignKey<Calendario>(c => c.GruppoId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

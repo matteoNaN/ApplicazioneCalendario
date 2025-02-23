@@ -1,0 +1,60 @@
+@using CalendarioFrontEnd.Components
+@using CalendarioFrontEnd.Services.Http
+@using Heron.MudCalendar
+@using MudBlazor
+@using SharedLibrary.DTOs
+@using SharedLibrary.Models
+@inject NavigationManager NavigationManager
+
+
+<MudItem xs="12" sm="6" md="6" lg="4" Class="px-2">
+    <MudCard Class="group-card h-100" Elevation="8" @onclick="@(OnCliccaCard)">
+        <MudCardHeader Class="px-4 pt-4">
+            <MudAvatar Color="Color.Primary" Style="border-radius: 12px; width: 48px; height: 48px;">
+                @(gruppo.Name?.FirstOrDefault() ?? '?')
+            </MudAvatar>
+            <MudCardContent>
+                <MudText Typo="Typo.h6" Class="mb-1">@gruppo.Name</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-truncate">
+                    Creato da: @(gruppo.CreatorUser?.GetName() ?? "Utente sconosciuto")
+                </MudText>
+            </MudCardContent>
+        </MudCardHeader>
+
+        <MudCardContent Class="px-4 pb-2">
+            <MudText Typo="Typo.body2" Class="my-2 text-truncate-2-lines">@gruppo.Description</MudText>
+            <MudChipSet T="string" Class="mt-2">
+                <MudChip Icon="@Icons.Material.Filled.Group" Color="Color.Secondary" Class="py-1">
+                    Membri: @gruppo.JoinedUser?.Count.ToString()
+                </MudChip>
+            </MudChipSet>
+        </MudCardContent>
+
+        <MudCardActions Class="px-4 pb-3">
+            <MudButton Variant="Variant.Text"
+            Color="Color.Primary"
+            EndIcon="@Icons.Material.Filled.ExitToApp"
+            Size="Size.Small"
+            Class="mobile-button">
+                Esci
+            </MudButton>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Info" 
+            Color="Color.Secondary" 
+            Size="Size.Small"
+            Class="mobile-button" />
+        </MudCardActions>
+    </MudCard>
+</MudItem>
+
+
+@code {
+    [Parameter]
+    public GruppoDTO gruppo { get; set; }
+
+
+    public async Task OnCliccaCard()
+    {
+        NavigationManager.NavigateTo($"/gruppi?id={gruppo.Id}");
+    }
+}

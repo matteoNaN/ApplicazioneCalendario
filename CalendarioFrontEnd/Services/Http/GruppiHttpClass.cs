@@ -23,7 +23,7 @@ namespace CalendarioFrontEnd.Services.Http
         public async Task<Result> AggiungiGruppo(CreazioneGruppoDTO gruppoToAdd)
         {
             
-            var request = new HttpRequestMessage(HttpMethod.Post,$"/api/{ControllerConstants.GruppiController}AggiungiGruppo");
+            var request = new HttpRequestMessage(HttpMethod.Post,$"{ControllerConstants.GruppiController}AggiungiGruppo");
 
             var content = new StringContent(JsonSerializer.Serialize(gruppoToAdd), Encoding.UTF8,"application/json");
 
@@ -47,7 +47,7 @@ namespace CalendarioFrontEnd.Services.Http
 
         public async Task<Result<List<GruppoDTO>>> GetGruppiUtente()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/{ControllerConstants.GruppiController}GetGruppiUtente");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{ControllerConstants.GruppiController}GetGruppiUtente");
 
             var client = _httpClientFactory.CreateClient("ApiClient");
 
@@ -77,6 +77,8 @@ namespace CalendarioFrontEnd.Services.Http
             return Result.Failure<List<GruppoDTO>>(errorMessage);
 
         }
+
+
 
     }
 }

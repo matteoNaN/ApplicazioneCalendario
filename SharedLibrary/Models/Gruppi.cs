@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +21,13 @@ namespace SharedLibrary.Models
 
         // La chiave primaria di ApplicationUser è string, non int
         public string CreatorUserId { get; set; }
-
         public ApplicationUser CreatorUser { get; set; }
+
+
+        public Guid? CalendarioId { get; set; }
+        public Calendario? Calendario { get; set; }
+
+
 
         public ICollection<GruppoUser> JoinedUsers { get; set; } = new List<GruppoUser>();
     }

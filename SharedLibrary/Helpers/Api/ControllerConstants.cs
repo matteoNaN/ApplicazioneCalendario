@@ -8,7 +8,8 @@ namespace SharedLibrary.Helpers.Api
 {
     public static class ControllerConstants
     {
-        public static string GruppiController { get; } = "Gruppi/";
+        public static string GruppiController { get; } = "/api/Gruppi/";
+        public static string CalendariController { get; } = "/api/Calendari/";
 
     }
 }

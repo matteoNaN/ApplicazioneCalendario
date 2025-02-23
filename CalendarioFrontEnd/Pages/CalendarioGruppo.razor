@@ -1,0 +1,31 @@
+﻿@page "/gruppi"
+@using Heron.MudCalendar
+@inject IDialogService dialogService
+
+
+<MudCalendar CellClicked="CellClicked"></MudCalendar>
+
+@code {
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string gruppiId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        //caricamento dati
+
+    }
+
+    private void CellClicked()
+    {
+        dialogService.ShowMessageBox("Cella cliccata", "Cella cliccata");
+    }
+
+}
