@@ -18,5 +18,7 @@ namespace SharedLibrary.DTOs
 
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 
+        public ApplicationUserDTO CreationUser { get; set; }
+
     }
 }

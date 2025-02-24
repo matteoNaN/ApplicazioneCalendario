@@ -18,6 +18,7 @@ namespace SharedLibrary.DataAccess
         public DbSet<Gruppi> Gruppi { get; set; }
         public DbSet<GruppoUser> GruppoUsers { get; set; }
         public DbSet<Impegno> Impegni { get; set; }
+        public DbSet<Calendario> Calendari { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

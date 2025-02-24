@@ -68,5 +68,45 @@ namespace API_ApplicazioneCalendario.Controllers
 
 
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetCalendarioGruppo([FromQuery]Guid gruppoId)
+        {
+            var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+            if (string.IsNullOrEmpty(jti))
+            {
+                return Unauthorized("errore di authentificazione");
+            }
+
+            var res = await _gruppiService.GetCalendarioGruppo(jti, gruppoId);
+
+            if (!res.IsSuccess)
+            {
+                return BadRequest(res.Error.Message);
+            }
+
+            return Ok(res.Data);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> EsciDaGruppo([FromQuery] Guid gruppoId)
+        {
+            var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+            if (string.IsNullOrEmpty(jti))
+            {
+                return Unauthorized("errore di authentificazione");
+            }
+            var res = await _gruppiService.EsciDaGruppo(jti, gruppoId);
+            if (!res.IsSuccess)
+            {
+                return BadRequest(res.Error.Message);
+            }
+            return Ok();
+        }
+
+
+
     }
 }

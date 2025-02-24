@@ -13,4 +13,10 @@ namespace SharedLibrary.DTOs
         public string Description { get; set; }
         public List<ImpegnoDTO> Impegni { get; set; }
     }
+
+    public class ModificaCalendarioDTO
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+    }
 }

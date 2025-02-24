@@ -59,7 +59,7 @@ namespace API_ApplicazioneCalendario
 
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
+            builder.Services.AddSignalR();
 
             var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
@@ -142,7 +142,7 @@ namespace API_ApplicazioneCalendario
 
             app.UseHttpsRedirection();
             app.UseCors("AllowBlazorClient");
-
+            app.MapHub<DataHub>("/datahub");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapDefaultEndpoints();

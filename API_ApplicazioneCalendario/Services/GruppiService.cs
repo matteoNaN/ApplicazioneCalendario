@@ -15,9 +15,11 @@ namespace API_ApplicazioneCalendario.Services
 
         public Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppi);
 
-        public Task<Result> EsciDaGruppo(ApplicationUser applicationUser, Gruppi gruppi);
+        public Task<Result> EsciDaGruppo(string applicationUser, Guid gruppoId);
 
         public Task<Result> EntraInGruppo(ApplicationUser appUser, Gruppi gruppi);
+
+        public Task<Result<CalendarioDTO>> GetCalendarioGruppo(string userId, Guid gruppoId);
 
 
 
@@ -53,8 +55,17 @@ namespace API_ApplicazioneCalendario.Services
                 CreationDate = DateTime.Now
             };
 
+            var Calendario = new Calendario()
+            {
+                Id = Guid.NewGuid(),
+                Name = "",
+                Description = "",
+                GruppoId = gruppo.Id
+            };
+
             await _context.GruppoUsers.AddAsync(GruppoUser);
             await _context.Gruppi.AddAsync(gruppo);
+            await _context.Calendari.AddAsync(Calendario);
             await _context.SaveChangesAsync();
           
           
@@ -67,9 +78,41 @@ namespace API_ApplicazioneCalendario.Services
             throw new NotImplementedException();
         }
 
-        public Task<Result> EsciDaGruppo(ApplicationUser applicationUser, Gruppi gruppi)
+        public Task<Result> EsciDaGruppo(string applicationUser, Guid gruppoId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Result<CalendarioDTO>> GetCalendarioGruppo(string userId, Guid gruppoId)
+        {
+            var gruppoDTO = await _context.Calendari
+                .Include(c => c.Impegni)
+                .Where(c => c.GruppoId == gruppoId &&
+                       c.Gruppo.JoinedUsers.Any(ju=> ju.UserId == userId))
+                .Select(c => new CalendarioDTO
+                {
+                    Id = c.Id,
+                    Impegni = c.Impegni.Select(i => new ImpegnoDTO
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Description = i.Description,
+                        CreationDate = i.CreationDate,
+                        CreationUser = new ApplicationUserDTO
+                        {
+                            Id = i.UserId,
+                            Email = i.CreationUser.Email,
+                            Name = i.CreationUser.UserName
+                        }
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+
+            if(gruppoDTO is null)
+            {
+                return Result.Failure<CalendarioDTO>(new Error("Errore nella ricerca del calendario del gruppo"));  
+            }
+
+            return Result.Success(gruppoDTO);
         }
 
         public async Task<Result<List<GruppoDTO>>> GetGruppiUtente(string userId)
