@@ -142,7 +142,7 @@ namespace API_ApplicazioneCalendario
 
             app.UseHttpsRedirection();
             app.UseCors("AllowBlazorClient");
-            app.MapHub<DataHub>("/datahub");
+            app.MapHub<GruppoHub>("/gruppohub");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapDefaultEndpoints();

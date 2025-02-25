@@ -1,16 +1,14 @@
-﻿using SharedLibrary.Models.IdentityOverrides;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedLibrary.Models
+namespace SharedLibrary.DTOs
 {
-    public class Impegno
+    public class AggiungiImpegnoDTO
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
 
         [MaxLength(100)]
         public string Name { get; set; }
@@ -25,9 +23,5 @@ namespace SharedLibrary.Models
 
         public string UserId { get; set; } // Deve essere string
         public Guid GruppoId { get; set; }
-
-        public ApplicationUser CreationUser { get; set; }
-        public Gruppi Gruppo { get; set; }
     }
-
 }

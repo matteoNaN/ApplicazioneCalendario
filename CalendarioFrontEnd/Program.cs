@@ -43,6 +43,7 @@ namespace CalendarioFrontEnd
 
             #region//////////////////////////////// SERVIZI PER I DATI ////////////////
             builder.Services.AddScoped<GruppiHttpClass>();
+            builder.Services.AddScoped<CalendarioHttpService>();
             #endregion
 
 

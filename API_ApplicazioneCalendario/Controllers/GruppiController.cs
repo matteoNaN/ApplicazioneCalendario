@@ -70,7 +70,7 @@ namespace API_ApplicazioneCalendario.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetCalendarioGruppo([FromQuery]Guid gruppoId)
+        public async Task<IActionResult> GetCalendarioGruppo([FromQuery]string gruppoId)
         {
             var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
 
@@ -79,7 +79,7 @@ namespace API_ApplicazioneCalendario.Controllers
                 return Unauthorized("errore di authentificazione");
             }
 
-            var res = await _gruppiService.GetCalendarioGruppo(jti, gruppoId);
+            var res = await _gruppiService.GetCalendarioGruppo(jti, Guid.Parse(gruppoId));
 
             if (!res.IsSuccess)
             {

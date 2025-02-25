@@ -1,31 +1,94 @@
 ﻿@page "/gruppi"
+@using CalendarioFrontEnd.Services.Http
+@using CalendarioFrontEnd.Utilities
 @using Heron.MudCalendar
+@using Microsoft.AspNetCore.SignalR.Client
+@using SharedLibrary.DTOs
+@using SharedLibrary.Helpers.Api
 @inject IDialogService dialogService
+@inject ISnackbar snackbar
+@inject CalendarioHttpService _calendarioService
+@inject NavigationManager NavigationManager
 
 
 <MudCalendar CellClicked="CellClicked"></MudCalendar>
 
 @code {
 
-    [SupplyParameterFromQuery]
+
     [Parameter]
+    [SupplyParameterFromQuery(Name = "id")]
     public string gruppiId { get; set; }
+
+    private HubConnection? hubConnection;
+
+    private string message = "";
+
+    private bool _firstLoad = true;
+
+    private CalendarioDTO? calendarioDTO = null;
 
     protected override async Task OnInitializedAsync()
     {
-
-        await LoadData();
+        if(_firstLoad)
+        {
+            await LoadData();
+        }
     }
 
     private async Task LoadData()
     {
-        
+        if (gruppiId is null)
+        {
+            snackbar.Add("Errore: nessun gruppo trovato per questo calendario", Severity.Error);
+            return;
+        }
 
+        var res = await _calendarioService.GetCalendarioGruppo(Guid.Parse(gruppiId));
+
+        if (res.IsSuccess is false)
+        {
+            var snackResult = ParseResultToSnackbar.Parse(res, "errore nella ricezione dei dati del calendario");
+
+            Snackbar.Add(snackResult.Message, snackResult.Severity);
+            return;
+        }
+
+        calendarioDTO = res.Data;
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(ControllerConstants.ApiUrl + "gruppohub")
+            .Build();
+
+        hubConnection.On<string>("ReceiveUpdate", (msg) =>
+        {
+            message = msg;
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+        await hubConnection.SendAsync("JoinGroup", gruppiId);
+
+        _firstLoad = false;
+
+        NavigationManager.NavigateTo(NavigationManager.BaseUri +"gruppi", replace: true);
+
+
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("LeaveGroup", gruppiId);
+            await hubConnection.DisposeAsync();
+        }
     }
 
     private void CellClicked()
     {
-        dialogService.ShowMessageBox("Cella cliccata", "Cella cliccata");
+
     }
 
 }

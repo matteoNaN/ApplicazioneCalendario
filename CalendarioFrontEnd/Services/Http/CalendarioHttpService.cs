@@ -18,7 +18,7 @@ namespace CalendarioFrontEnd.Services.Http
 
         public async Task<Result<CalendarioDTO>> GetCalendarioGruppo(Guid gruppoId)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{ControllerConstants.GruppiController}GetCalendarioGruppo?id=");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{ControllerConstants.GruppiController}GetCalendarioGruppo?gruppoId={gruppoId}");
             var client = _httpClientFactory.CreateClient("ApiClient");
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)

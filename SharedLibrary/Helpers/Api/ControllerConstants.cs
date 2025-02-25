@@ -10,6 +10,7 @@ namespace SharedLibrary.Helpers.Api
     {
         public static string GruppiController { get; } = "/api/Gruppi/";
         public static string CalendariController { get; } = "/api/Calendari/";
+        public static string ApiUrl { get; } = "https://localhost:7163/";
 
     }
 }
