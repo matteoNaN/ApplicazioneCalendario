@@ -89,6 +89,26 @@ namespace API_ApplicazioneCalendario.Controllers
             return Ok(res.Data);
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddEventoCalendario([FromBody] AggiungiImpegnoDTO impegnoToAdd)
+        {
+            var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+
+            if (string.IsNullOrEmpty(jti))
+            {
+                return Unauthorized("errore di authentificazione");
+            }
+
+            var res = await _gruppiService.AggiungiImpegno(impegnoToAdd);
+
+            if (!res.IsSuccess)
+            {
+                return BadRequest(res.Error.Message);
+            }
+            return Ok();
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> EsciDaGruppo([FromQuery] Guid gruppoId)

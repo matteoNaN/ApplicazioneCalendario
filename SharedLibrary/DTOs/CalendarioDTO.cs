@@ -11,7 +11,7 @@ namespace SharedLibrary.DTOs
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<ImpegnoDTO> Impegni { get; set; }
+        public List<AggiungiImpegnoDTO> Impegni { get; set; }
     }
 
     public class ModificaCalendarioDTO

@@ -11,7 +11,13 @@
 @inject NavigationManager NavigationManager
 
 
-<MudCalendar CellClicked="CellClicked"></MudCalendar>
+<MudCalendar Items="impegnoDTOs" CellClicked="CellClicked">
+    <CellTemplate>
+        <div style="width: 100%; height: 100%; border: 2px solid">
+            <div class="pa-2"><MudText Typo="Typo.body2">@(((AggiungiImpegnoDTO)context).Name)</MudText></div>
+        </div>
+    </CellTemplate>
+</MudCalendar>
 
 <MudIconButton Icon="@Icons.Material.Filled.Add"
                Color="Color.Primary"
@@ -20,8 +26,8 @@
                Style="position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 64px; height: 64px;"
                OnClick="() => HandleFormVisibility()" />
 
-<BaseModale IsVisible ="@_showModale">
-    <FormImpegni  />
+<BaseModale IsVisible="@_showModale" OnSave="@HandleSaveImpegno" OnClose="@(() => _showModale = false)">
+    <FormImpegni @ref="_formImpegni" />
 </BaseModale>
 
 
@@ -31,9 +37,13 @@
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "id")]
-    public string gruppiId { get; set; }
+    public string _gruppiId { get; set; }
+
+    public string GruppoId { get; set; }
 
     private HubConnection? hubConnection;
+
+    private FormImpegni? _formImpegni;
 
     private string message = "";
 
@@ -43,25 +53,32 @@
 
     private CalendarioDTO? calendarioDTO = null;
 
-    private List<ImpegnoDTO> impegnoDTOs = new List<ImpegnoDTO>();
+    private List<AggiungiImpegnoDTO> impegnoDTOs = new List<AggiungiImpegnoDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        if(_firstLoad)
+        if (_firstLoad)
         {
             await LoadData();
         }
+
+
+        hubConnection.On<AggiungiImpegnoDTO>("ReceiveImpegnoUpdate", (newEvent) =>
+    {
+        impegnoDTOs.Add(newEvent);
+        StateHasChanged();
+    });
     }
 
     private async Task LoadData()
     {
-        if (gruppiId is null)
+        if (_gruppiId is null)
         {
             snackbar.Add("Errore: nessun gruppo trovato per questo calendario", Severity.Error);
             return;
         }
 
-        var res = await _calendarioService.GetCalendarioGruppo(Guid.Parse(gruppiId));
+        var res = await _calendarioService.GetCalendarioGruppo(Guid.Parse(_gruppiId));
 
         if (res.IsSuccess is false)
         {
@@ -84,13 +101,45 @@
         });
 
         await hubConnection.StartAsync();
-        await hubConnection.SendAsync("JoinGroup", gruppiId);
+        await hubConnection.SendAsync("JoinGroup", _gruppiId);
 
+        GruppoId = _gruppiId;
         _firstLoad = false;
 
-        NavigationManager.NavigateTo(NavigationManager.BaseUri +"gruppi", replace: true);
+        NavigationManager.NavigateTo(NavigationManager.BaseUri + "gruppi", replace: true);
 
 
+    }
+
+    private async Task HandleSaveImpegno()
+    {
+        if (_formImpegni is null)
+        {
+            return;
+        }
+
+        var res = await _formImpegni.HandleSubmit(GruppoId);
+
+
+
+        if (!res.IsSuccess)
+        {
+            return;
+        }
+
+        impegnoDTOs.Add(res.Data);
+        await hubConnection.SendAsync("AddImpegno", GruppoId, res.Data);
+
+        OnFormSaved();
+
+
+
+
+    }
+
+    private void OnFormSaved()
+    {
+        _showModale = false; // Chiudi il modale dopo il salvataggio
     }
 
 
@@ -98,7 +147,7 @@
     {
         if (hubConnection is not null)
         {
-            await hubConnection.SendAsync("LeaveGroup", gruppiId);
+            await hubConnection.SendAsync("LeaveGroup", _gruppiId);
             await hubConnection.DisposeAsync();
         }
     }

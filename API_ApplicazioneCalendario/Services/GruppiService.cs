@@ -19,6 +19,8 @@ namespace API_ApplicazioneCalendario.Services
 
         public Task<Result> EntraInGruppo(ApplicationUser appUser, Gruppi gruppi);
 
+        public Task<Result> AggiungiImpegno(AggiungiImpegnoDTO impegnoDTO);
+
         public Task<Result<CalendarioDTO>> GetCalendarioGruppo(string userId, Guid gruppoId);
 
 
@@ -31,6 +33,26 @@ namespace API_ApplicazioneCalendario.Services
         public GruppiService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Result> AggiungiImpegno(AggiungiImpegnoDTO impegnoDTO)
+        {
+            var impegno = new Impegno()
+            {
+                Id = Guid.NewGuid(),
+                Name = impegnoDTO.Name,
+                Description = impegnoDTO.Description,
+                StartDate = impegnoDTO.Start,
+                EndDate = impegnoDTO.End.Value,
+                CreationDate = DateTime.Now,
+                UserId = impegnoDTO.UserId,
+                GruppoId = impegnoDTO.GruppoId
+            };
+
+            _context.Impegni.Add(impegno);
+            await _context.SaveChangesAsync();
+
+            return Result.Success();
         }
 
         public async Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppoDTO)
@@ -92,9 +114,9 @@ namespace API_ApplicazioneCalendario.Services
                 .Select(c => new CalendarioDTO
                 {
                     Id = c.Id,
-                    Impegni = c.Impegni.Select(i => new ImpegnoDTO
+                    Impegni = c.Impegni.Select(i => new AggiungiImpegnoDTO
                     {
-                        Id = i.Id,
+                        Id = i.Id.ToString(),
                         Name = i.Name,
                         Description = i.Description,
                         CreationDate = i.CreationDate,

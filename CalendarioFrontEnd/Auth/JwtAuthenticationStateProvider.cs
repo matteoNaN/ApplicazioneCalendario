@@ -22,6 +22,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     /// </summary>
     public string Token => this._user?.Jwt;
 
+    public string? GetClaimValue(string claimType)
+    {
+        return this._user?.Claims?.FindFirst(claimType)?.Value;
+    }
+
+
     /// <summary>
     /// Login the user with a given JWT token.
     /// </summary>

@@ -3,16 +3,17 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @using SharedLibrary.DTOs
+@using SharedLibrary.Helpers.ApiResponse
 @using SharedLibrary.Helpers.Validators
 @inject CalendarioHttpService _calendarioService
 @inject NavigationManager NavigationManager
-
+@inject JwtAuthenticationStateProvider jwtAuthenticationStateProvider;
 
 
 <h3 class="custom-form-title">Crea Impegno</h3>
 
 
-<form class="custom-form-container" @onsubmit="HandleSubmit">
+<form class="custom-form-container" >
     <div class="custom-form-group">
         <label for="Name" class="custom-input-label">Nome Gruppo</label>
         <input type="text" id="Name" class="custom-form-input" @bind="ImpegnoToAdd.Name" />
@@ -22,9 +23,9 @@
         <label for="Description" class="custom-input-label">Descrizione</label>
         <textarea id="Description" class="custom-form-input custom-textarea" @bind="ImpegnoToAdd.Description"></textarea>
     </div>
-    <MudDatePicker Label="Basic example"  @bind-value="ImpegnoToAdd.Start" />
+    <MudDatePicker Label="Data Inizio"  @bind-value="ImpegnoToAdd.Start" />
 
-    <MudDatePicker Label="Basic example" @bind-value="ImpegnoToAdd.End" />
+    <MudDatePicker Label="Data Fine" @bind-value="ImpegnoToAdd.End" />
 
 
 </form>
@@ -37,33 +38,44 @@
     [Parameter]
     public EventCallback OnSuccessfullSubmit { get; set; }
 
-    private async Task HandleSubmit()
+    public async Task<Result<AggiungiImpegnoDTO>> HandleSubmit(string gruppoID)
     {
         try
         {
 
             var validationResult = IsObjectValid<AggiungiImpegnoDTO>.CheckValidation(ImpegnoToAdd);
+            string? userId = jwtAuthenticationStateProvider.GetClaimValue("jti");
+
+            if (userId is null)
+            {
+                Snackbar.Add($"Errore: Utente non autorizzato", Severity.Error);
+                return Result.Failure<AggiungiImpegnoDTO>(null, new Error("Utente non autorizzato"));
+            }
+            ImpegnoToAdd.UserId = userId;
+            ImpegnoToAdd.GruppoId = Guid.Parse(gruppoID);
             if (!validationResult.IsSuccess)
             {
                 var message = validationResult.Data.GetValidationMessage();
                 Snackbar.Add($"Errore: {message}", Severity.Error);
-                return;
+                return Result.Failure<AggiungiImpegnoDTO>(new Error("Errore di validazione"));
             }
 
-            // var res = await _gruppiService.AggiungiGruppo(Gruppoo);
-            // var snackResult = ParseResultToSnackbar.Parse(res, "gruppo creato con successo 👍");
+            var result = await _calendarioService.AddImpegnoCalendario(ImpegnoToAdd);
+            if (!result.IsSuccess)
+            {
+                Snackbar.Add($"Errore: {result.Error.Message}", Severity.Error);
+                return Result.Failure<AggiungiImpegnoDTO>(new Error("Errore nell'aggiunta di un impegno"));
+            }
 
-            // Snackbar.Add(snackResult.Message, snackResult.Severity);
+            return Result.Success<AggiungiImpegnoDTO>(ImpegnoToAdd);
 
-            // if (OnSuccessfullSubmit.HasDelegate)
-            // {
-            //     await OnSuccessfullSubmit.InvokeAsync();
-            // }
+            
 
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Errore: {ex.Message}", Severity.Error);
+            return Result.Failure<AggiungiImpegnoDTO>(null,new Error("Errore sconosciuto"));
         }
     }
 }
