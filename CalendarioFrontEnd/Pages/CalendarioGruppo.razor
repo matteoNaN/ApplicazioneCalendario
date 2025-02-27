@@ -13,6 +13,19 @@
 
 <MudCalendar CellClicked="CellClicked"></MudCalendar>
 
+<MudIconButton Icon="@Icons.Material.Filled.Add"
+               Color="Color.Primary"
+               Variant="Variant.Filled"
+               Class="fab-button"
+               Style="position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 64px; height: 64px;"
+               OnClick="() => HandleFormVisibility()" />
+
+<BaseModale IsVisible ="@_showModale">
+    <FormImpegni  />
+</BaseModale>
+
+
+
 @code {
 
 
@@ -24,9 +37,13 @@
 
     private string message = "";
 
+    private bool _showModale = false;
+
     private bool _firstLoad = true;
 
     private CalendarioDTO? calendarioDTO = null;
+
+    private List<ImpegnoDTO> impegnoDTOs = new List<ImpegnoDTO>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,6 +101,12 @@
             await hubConnection.SendAsync("LeaveGroup", gruppiId);
             await hubConnection.DisposeAsync();
         }
+    }
+
+    private void HandleFormVisibility()
+    {
+        _showModale = !_showModale;
+        return;
     }
 
     private void CellClicked()

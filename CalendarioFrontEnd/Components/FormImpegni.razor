@@ -1,0 +1,69 @@
+﻿@using CalendarioFrontEnd.Services.Http
+@using CalendarioFrontEnd.Utilities
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+@using SharedLibrary.DTOs
+@using SharedLibrary.Helpers.Validators
+@inject CalendarioHttpService _calendarioService
+@inject NavigationManager NavigationManager
+
+
+
+<h3 class="custom-form-title">Crea Impegno</h3>
+
+
+<form class="custom-form-container" @onsubmit="HandleSubmit">
+    <div class="custom-form-group">
+        <label for="Name" class="custom-input-label">Nome Gruppo</label>
+        <input type="text" id="Name" class="custom-form-input" @bind="ImpegnoToAdd.Name" />
+    </div>
+
+    <div class="custom-form-group">
+        <label for="Description" class="custom-input-label">Descrizione</label>
+        <textarea id="Description" class="custom-form-input custom-textarea" @bind="ImpegnoToAdd.Description"></textarea>
+    </div>
+    <MudDatePicker Label="Basic example"  @bind-value="ImpegnoToAdd.Start" />
+
+    <MudDatePicker Label="Basic example" @bind-value="ImpegnoToAdd.End" />
+
+
+</form>
+
+
+
+@code {
+    public AggiungiImpegnoDTO ImpegnoToAdd { get; set; } = new AggiungiImpegnoDTO();
+
+    [Parameter]
+    public EventCallback OnSuccessfullSubmit { get; set; }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+
+            var validationResult = IsObjectValid<AggiungiImpegnoDTO>.CheckValidation(ImpegnoToAdd);
+            if (!validationResult.IsSuccess)
+            {
+                var message = validationResult.Data.GetValidationMessage();
+                Snackbar.Add($"Errore: {message}", Severity.Error);
+                return;
+            }
+
+            // var res = await _gruppiService.AggiungiGruppo(Gruppoo);
+            // var snackResult = ParseResultToSnackbar.Parse(res, "gruppo creato con successo 👍");
+
+            // Snackbar.Add(snackResult.Message, snackResult.Severity);
+
+            // if (OnSuccessfullSubmit.HasDelegate)
+            // {
+            //     await OnSuccessfullSubmit.InvokeAsync();
+            // }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Errore: {ex.Message}", Severity.Error);
+        }
+    }
+}

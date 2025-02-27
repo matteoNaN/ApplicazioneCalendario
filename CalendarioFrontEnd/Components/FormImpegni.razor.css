@@ -1,0 +1,100 @@
+﻿
+/* ======= Stile Generale del Form ======= */
+.custom-form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f8f9fa; /* Sfondo chiaro per migliore contrasto */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ======= Titolo ======= */
+.custom-form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 15px;
+}
+
+/* ======= Gruppi di Input ======= */
+.custom-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.custom-input-label {
+    font-weight: 600;
+    color: #444;
+}
+
+/* ======= Input e Textarea ======= */
+.custom-form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #007bff;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+    /* Effetto Focus sugli Input */
+    .custom-form-input:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+/* Stile per la Textarea */
+.custom-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ======= Pulsante di Invio ======= */
+.custom-form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Bottone personalizzato (senza Blazor) */
+.custom-submit-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+    .custom-submit-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.02);
+    }
+
+/* ======= Mobile Friendly ======= */
+@media (max-width: 600px) {
+    .custom-form-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .custom-form-title {
+        font-size: 20px;
+    }
+
+    .custom-submit-button {
+        padding: 12px;
+    }
+}

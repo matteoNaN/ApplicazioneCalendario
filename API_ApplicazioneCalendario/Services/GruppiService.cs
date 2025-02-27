@@ -119,6 +119,7 @@ namespace API_ApplicazioneCalendario.Services
         {
             var gruppiList = await _context.Gruppi
                 .Include(gr => gr.CreatorUser)
+                .Where(gr => gr.JoinedUsers.Any(ju => ju.UserId == userId))
                 .Select(gr => new GruppoDTO
                 {
                     Id = gr.Id.ToString(),

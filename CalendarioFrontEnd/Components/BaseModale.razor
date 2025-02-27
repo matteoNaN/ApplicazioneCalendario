@@ -1,0 +1,188 @@
+﻿
+@inherits ComponentBase
+
+
+<div class="@(IsVisible ? "modal-container visible" : "modal-container")" @onclick="HandleBackdropClick">
+    <div class="modal-content @SizeClass @AdditionalClass" @onclick:stopPropagation="true">
+        <div class="modal-header">
+            <h3 class="modal-title">@Title</h3>
+            @if (ShowCloseButton)
+            {
+                <button type="button" class="close-button" @onclick="OnCloseModal">
+                    <span>&times;</span>
+                </button>
+            }
+        </div>
+
+        <div class="modal-body">
+            @ChildContent
+        </div>
+
+        <div class="modal-footer">
+            @if (CustomFooter != null)
+            {
+                @CustomFooter
+            }
+            else
+            {
+                @if (ShowCancelButton)
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="OnCloseModal">
+                        @CancelButtonText
+                    </button>
+                }
+                @if (ShowSaveButton)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="OnSaveModal" disabled="@IsSaveButtonDisabled">
+                        @SaveButtonText
+                    </button>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Modal";
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment CustomFooter { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public bool CloseOnBackdropClick { get; set; } = true;
+
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    [Parameter]
+    public bool ShowSaveButton { get; set; } = true;
+
+    [Parameter]
+    public bool ShowCancelButton { get; set; } = true;
+
+    [Parameter]
+    public bool IsSaveButtonDisabled { get; set; }
+
+    [Parameter]
+    public string SaveButtonText { get; set; } = "Salva";
+
+    [Parameter]
+    public string CancelButtonText { get; set; } = "Annulla";
+
+    [Parameter]
+    public string Size { get; set; } = "md";
+
+    [Parameter]
+    public string AdditionalClass { get; set; } = "";
+
+    [Parameter]
+    public bool PreventScrolling { get; set; } = true;
+
+    private string SizeClass => Size?.ToLower() switch
+    {
+        "sm" => "modal-size-sm",
+        "lg" => "modal-size-lg",
+        "xl" => "modal-size-xl",
+        "fullscreen" => "modal-size-fullscreen",
+        _ => ""
+    };
+
+    private bool isJsInitialized = false;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.modalFunctions = {
+                    preventBodyScroll: function() {
+                        document.body.style.overflow = 'hidden';
+                    },
+
+                    enableBodyScroll: function() {
+                        document.body.style.overflow = 'auto';
+                    }
+                };
+            ");
+            isJsInitialized = true;
+
+            if (IsVisible && PreventScrolling)
+            {
+                await JSRuntime.InvokeVoidAsync("modalFunctions.preventBodyScroll");
+            }
+        }
+        else if (isJsInitialized && PreventScrolling)
+        {
+            if (IsVisible)
+            {
+                await JSRuntime.InvokeVoidAsync("modalFunctions.preventBodyScroll");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("modalFunctions.enableBodyScroll");
+            }
+        }
+    }
+
+    // Monitora i cambiamenti della visibilità
+    private bool _previousVisibility;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (isJsInitialized && PreventScrolling && _previousVisibility != IsVisible)
+        {
+            _previousVisibility = IsVisible;
+
+            if (IsVisible)
+            {
+                await JSRuntime.InvokeVoidAsync("modalFunctions.preventBodyScroll");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("modalFunctions.enableBodyScroll");
+            }
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task OnSaveModal()
+    {
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync(true);
+        }
+    }
+
+    private async Task OnCloseModal()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+
+    private async Task HandleBackdropClick()
+    {
+        if (CloseOnBackdropClick)
+        {
+            await OnCloseModal();
+        }
+    }
+}
