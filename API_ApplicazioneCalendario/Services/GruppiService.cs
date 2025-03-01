@@ -43,7 +43,7 @@ namespace API_ApplicazioneCalendario.Services
                 Name = impegnoDTO.Name,
                 Description = impegnoDTO.Description,
                 StartDate = impegnoDTO.Start,
-                EndDate = impegnoDTO.End.Value,
+                EndDate = impegnoDTO.End.HasValue? impegnoDTO.End.Value : DateTime.Now,
                 CreationDate = DateTime.Now,
                 UserId = impegnoDTO.UserId,
                 GruppoId = impegnoDTO.GruppoId
@@ -108,15 +108,16 @@ namespace API_ApplicazioneCalendario.Services
         public async Task<Result<CalendarioDTO>> GetCalendarioGruppo(string userId, Guid gruppoId)
         {
             var gruppoDTO = await _context.Calendari
-                .Include(c => c.Impegni)
+                .Include(c => c.Gruppo)
+                .Include(c => c.Gruppo.Impegni)
                 .Where(c => c.GruppoId == gruppoId &&
                        c.Gruppo.JoinedUsers.Any(ju=> ju.UserId == userId))
                 .Select(c => new CalendarioDTO
                 {
                     Id = c.Id,
-                    Impegni = c.Impegni.Select(i => new AggiungiImpegnoDTO
+                    Impegni = c.Gruppo.Impegni.Select(i => new ImpegnoDTO
                     {
-                        Id = i.Id.ToString(),
+                        APP_Id = i.Id.ToString(),
                         Name = i.Name,
                         Description = i.Description,
                         CreationDate = i.CreationDate,

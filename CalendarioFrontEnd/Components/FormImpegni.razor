@@ -23,9 +23,9 @@
         <label for="Description" class="custom-input-label">Descrizione</label>
         <textarea id="Description" class="custom-form-input custom-textarea" @bind="ImpegnoToAdd.Description"></textarea>
     </div>
-    <MudDatePicker Label="Data Inizio"  @bind-value="ImpegnoToAdd.Start" />
+    <MudDatePicker  Style="z-index:99999;" Label="Data Inizio" @bind-Date="_startDate" />
+    <MudDatePicker  Style="z-index:99999;" Label="Data Fine" @bind-Date="ImpegnoToAdd.End" />
 
-    <MudDatePicker Label="Data Fine" @bind-value="ImpegnoToAdd.End" />
 
 
 </form>
@@ -35,8 +35,32 @@
 @code {
     public AggiungiImpegnoDTO ImpegnoToAdd { get; set; } = new AggiungiImpegnoDTO();
 
+    //PORCATA PER FAR FUNZIONARE IL BINDING DELLA DATA
+    private DateTime? _startDate;
+    private DateTime? StartDate
+    {
+        get => _startDate;
+        set
+        {
+            _startDate = value;
+            if (value.HasValue)
+            {
+                ImpegnoToAdd.Start = value.Value; // Assegniamo solo se ha un valore
+            }
+        }
+    }
+
+
     [Parameter]
     public EventCallback OnSuccessfullSubmit { get; set; }
+
+
+
+    protected override void OnInitialized()
+    {
+        ImpegnoToAdd.Start = DateTime.Now;
+        _startDate = ImpegnoToAdd.Start;
+    }
 
     public async Task<Result<AggiungiImpegnoDTO>> HandleSubmit(string gruppoID)
     {
@@ -44,6 +68,8 @@
         {
 
             var validationResult = IsObjectValid<AggiungiImpegnoDTO>.CheckValidation(ImpegnoToAdd);
+
+
             string? userId = jwtAuthenticationStateProvider.GetClaimValue("jti");
 
             if (userId is null)
@@ -78,4 +104,6 @@
             return Result.Failure<AggiungiImpegnoDTO>(null,new Error("Errore sconosciuto"));
         }
     }
+
+
 }

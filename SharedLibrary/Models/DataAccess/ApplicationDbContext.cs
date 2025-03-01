@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Models;
 using SharedLibrary.Models.IdentityOverrides;
+using System.Reflection.Emit;
 
 namespace SharedLibrary.DataAccess
 {
@@ -48,19 +49,22 @@ namespace SharedLibrary.DataAccess
                 .HasForeignKey(gu => gu.GruppoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Relazione tra Impegno e ApplicationUser
-            builder.Entity<Impegno>()
-                .HasOne(i => i.CreationUser)
-                .WithMany()
-                .HasForeignKey(i => i.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
 
-            // Relazione tra Impegno e Gruppi
+
+            // Relazione 1-N tra Gruppi e Impegni
             builder.Entity<Impegno>()
-                .HasOne(i => i.Gruppo)
-                .WithMany()
-                .HasForeignKey(i => i.GruppoId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasOne(i => i.Gruppo)  // Un Impegno appartiene a un Gruppo
+                .WithMany(g => g.Impegni)  // Un Gruppo può avere molti Impegni
+                .HasForeignKey(i => i.GruppoId) // Chiave esterna in Impegno
+                .OnDelete(DeleteBehavior.Cascade); // Se elimini un Gruppo, elimini i suoi Impegni
+
+            // Relazione 1-N tra ApplicationUser e Impegni
+            builder.Entity<Impegno>()
+                .HasOne(i => i.CreationUser)  // Un Impegno ha un solo Creatore
+                .WithMany()  // L'utente non ha una collezione di Impegni
+                .HasForeignKey(i => i.UserId) // Chiave esterna
+                .OnDelete(DeleteBehavior.Restrict); // Non vogliamo eliminare tutti gli Impegni se un utente viene rimosso
+
 
             builder.Entity<Gruppi>()
                 .HasOne(g => g.Calendario)

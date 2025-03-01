@@ -28,7 +28,7 @@ namespace SharedLibrary.Models
         public Calendario? Calendario { get; set; }
 
 
-
+        public ICollection<Impegno> Impegni { get; set; } = new List<Impegno>();
         public ICollection<GruppoUser> JoinedUsers { get; set; } = new List<GruppoUser>();
     }
 

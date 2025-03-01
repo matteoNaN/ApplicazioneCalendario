@@ -11,7 +11,28 @@ namespace SharedLibrary.DTOs
 
     public class AggiungiImpegnoDTO : Heron.MudCalendar.CalendarItem
     {
-        public string Id { get; set; }
+
+
+        [Required(ErrorMessage = "Il nome è obbligatorio.")]
+        [MaxLength(100, ErrorMessage = "Il nome non può superare i 100 caratteri.")]
+        public string Name { get; set; }
+
+
+        [Required(ErrorMessage = "La descrizione è obbligatoria.")]
+        [MaxLength(1000, ErrorMessage = "La descrizione non può superare i 1000 caratteri.")]
+        public string Description { get; set; }
+
+
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+
+        public string UserId { get; set; } // Deve essere string
+
+        public Guid GruppoId { get; set; }
+    }
+
+    public class ImpegnoDTO : Heron.MudCalendar.CalendarItem
+    {
+        public string APP_Id { get; set; }
 
         [Required(ErrorMessage = "Il nome è obbligatorio.")]
         [MaxLength(100, ErrorMessage = "Il nome non può superare i 100 caratteri.")]
