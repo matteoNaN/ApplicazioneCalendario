@@ -119,6 +119,8 @@ namespace API_ApplicazioneCalendario.Services
                     {
                         APP_Id = i.Id.ToString(),
                         Name = i.Name,
+                        Start = i.StartDate,
+                        End = i.EndDate,
                         Description = i.Description,
                         CreationDate = i.CreationDate,
                         CreationUser = new ApplicationUserDTO
