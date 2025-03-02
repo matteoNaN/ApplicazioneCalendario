@@ -126,3 +126,8 @@ code {
     transition: all 0.3s ease !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
+
+.mud-popover {
+    z-index: 9999 !important;
+}
+

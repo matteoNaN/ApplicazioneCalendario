@@ -119,6 +119,7 @@ namespace API_ApplicazioneCalendario.Services
                     {
                         APP_Id = i.Id.ToString(),
                         Name = i.Name,
+                        Text = i.Name,
                         Start = i.StartDate,
                         End = i.EndDate,
                         Description = i.Description,

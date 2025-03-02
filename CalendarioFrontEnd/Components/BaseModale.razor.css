@@ -1,4 +1,13 @@
-﻿.modal-container {
+﻿
+
+.modal-content,
+.modal-body {
+    overflow: visible !important;
+}
+.modal-content {
+    animation: none;
+}
+.modal-container {
     display: none;
     position: fixed;
     top: 0;
@@ -120,14 +129,13 @@
 @keyframes modalFadeIn {
     from {
         opacity: 0;
-        transform: translateY(-20px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
+
 
 @media (max-width: 768px) {
     .modal-content {
