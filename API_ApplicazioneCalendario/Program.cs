@@ -77,21 +77,6 @@ namespace API_ApplicazioneCalendario
             builder.Services.AddSingleton<JwtManager>(sp =>
                 new JwtManager(jwtSettings));
 
-
-
-
-
-
-            /*
-             * 
-             *         public string ValidIssuer { get; set; }
-        public string ValidAudience { get; set; }
-        public string SecurityKey { get; set; }
-        public int ExpiryInMinutes { get; set; }
-             * 
-             * 
-             */
-
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();

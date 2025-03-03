@@ -9,6 +9,7 @@
 @inject ISnackbar snackbar
 @inject CalendarioHttpService _calendarioService
 @inject NavigationManager NavigationManager
+@inject HubConnection HubConnection
 
 
 @if (calendarioDTO is not null)
@@ -48,8 +49,6 @@ else
     public string _gruppiId { get; set; }
 
     public string GruppoId { get; set; }
-
-    private HubConnection? hubConnection;
 
     private FormImpegni? _formImpegni;
 
@@ -96,20 +95,23 @@ else
 
         calendarioDTO = res.Data;
 
-        if (hubConnection is null && _firstLoad)
+        if (_firstLoad)
         {
 
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl(ControllerConstants.ApiUrl + "gruppohub")
-                .Build();
+            HubConnection.On<ImpegnoDTO>("ReceiveImpegnoUpdate", (nuovoImpegno) =>
+                {
+                    calendarioDTO.Impegni.Add(nuovoImpegno);
+                    StateHasChanged();
+                    Console.WriteLine($"📥 Nuovo impegno ricevuto: {nuovoImpegno.Name}");
+                });
 
-            hubConnection.On<string>("ReceiveUpdate", (msg) =>
+            if (HubConnection.State == HubConnectionState.Disconnected)
             {
-                message = msg;
-                StateHasChanged();
-            });
-
-            await hubConnection.StartAsync();
+                await HubConnection.StartAsync();
+                Console.WriteLine("📡 Connessione SignalR avviata!");
+            }
+            await HubConnection.InvokeAsync("JoinGroup", GruppoId);
+            Console.WriteLine($"📩 Richiesta di join al gruppo mioGruppo");
             _firstLoad = false;
 
         }
@@ -134,11 +136,6 @@ else
         }
 
 
-        OnFormSaved();
-
-        await LoadData();
-        StateHasChanged();
-
     }
 
     private void OnFormSaved()
@@ -147,12 +144,14 @@ else
     }
 
 
+
+
     public async ValueTask DisposeAsync()
     {
-        if (hubConnection is not null)
+        if (HubConnection is not null)
         {
-            await hubConnection.SendAsync("LeaveGroup", _gruppiId);
-            await hubConnection.DisposeAsync();
+            await HubConnection.SendAsync("LeaveGroup", _gruppiId);
+            await HubConnection.DisposeAsync();
         }
     }
 

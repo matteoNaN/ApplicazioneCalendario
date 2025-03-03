@@ -9,6 +9,8 @@ using MudBlazor.Services;
 using CalendarioFrontEnd.Services.Http;
 using SharedLibrary.Helpers.Api;
 using MudBlazor;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CalendarioFrontEnd
 {
@@ -31,6 +33,7 @@ namespace CalendarioFrontEnd
 
             // Registra il CustomAuthenticationStateProvider come provider di stato di autenticazione
             builder.Services.AddSingleton<JwtAuthenticationStateProvider>();
+            
             builder.Services.AddSingleton<AuthenticationStateProvider>(provider => provider.GetRequiredService<JwtAuthenticationStateProvider>());
 
             var apiBaseUri = new Uri("https://localhost:7163");
@@ -44,6 +47,16 @@ namespace CalendarioFrontEnd
             #region//////////////////////////////// SERVIZI PER I DATI ////////////////
             builder.Services.AddScoped<GruppiHttpClass>();
             builder.Services.AddScoped<CalendarioHttpService>();
+            builder.Services.AddSingleton(sp =>
+            {
+                var navigation = sp.GetRequiredService<NavigationManager>();
+                var hubConnection = new HubConnectionBuilder()
+                    .WithUrl(ControllerConstants.ApiUrl + "gruppohub") // L'URL deve corrispondere all'Hub nel backend
+                    .WithAutomaticReconnect() // Tenta di riconnettersi automaticamente
+                    .Build();
+
+                return hubConnection;
+            });
             #endregion
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using SharedLibrary.DataAccess;
 using SharedLibrary.DTOs;
 using SharedLibrary.Helpers.ApiResponse;
@@ -29,30 +30,43 @@ namespace API_ApplicazioneCalendario.Services
     public class GruppiService : IGruppiService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<GruppoHub> _hubContext;
 
-        public GruppiService(ApplicationDbContext context)
+        public GruppiService(ApplicationDbContext context, IHubContext<GruppoHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         public async Task<Result> AggiungiImpegno(AggiungiImpegnoDTO impegnoDTO)
         {
-            var impegno = new Impegno()
+            try
             {
-                Id = Guid.NewGuid(),
-                Name = impegnoDTO.Name,
-                Description = impegnoDTO.Description,
-                StartDate = impegnoDTO.Start,
-                EndDate = impegnoDTO.End.HasValue? impegnoDTO.End.Value : DateTime.Now,
-                CreationDate = DateTime.Now,
-                UserId = impegnoDTO.UserId,
-                GruppoId = impegnoDTO.GruppoId
-            };
+                var impegno = new Impegno()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = impegnoDTO.Name,
+                    Description = impegnoDTO.Description,
+                    StartDate = impegnoDTO.Start,
+                    EndDate = impegnoDTO.End.HasValue? impegnoDTO.End.Value : DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    UserId = impegnoDTO.UserId,
+                    GruppoId = impegnoDTO.GruppoId
+                };
 
-            _context.Impegni.Add(impegno);
-            await _context.SaveChangesAsync();
+                await _context.Impegni.AddAsync(impegno);
+                await _context.SaveChangesAsync();
 
-            return Result.Success();
+                string id = impegnoDTO.GruppoId.ToString().ToUpper();
+                await _hubContext.Clients.Group(id)
+                                         .SendAsync("ReceiveImpegnoUpdate", impegnoDTO);
+                return Result.Success();
+
+            }catch (Exception e)
+            {
+                return Result.Failure(new Error(e.Message));
+            }
+
         }
 
         public async Task<Result> CreaGruppo(string user, CreazioneGruppoDTO gruppoDTO)
