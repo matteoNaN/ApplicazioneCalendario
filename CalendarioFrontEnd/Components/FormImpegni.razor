@@ -106,4 +106,14 @@
     }
 
 
+    public void ResetForm()
+    {
+        ImpegnoToAdd = new AggiungiImpegnoDTO();
+        ImpegnoToAdd.Start = DateTime.Now;
+        _startDate = ImpegnoToAdd.Start;
+    }
+
+
+
+
 }
