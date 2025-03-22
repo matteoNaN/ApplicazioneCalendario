@@ -1,0 +1,23 @@
+﻿@using SharedLibrary.DTOs
+
+<MudList T="ImpegnoDTO">
+    @foreach(ImpegnoDTO impegno in ImpegniDataCliccata)
+    {
+        <MudListItem>
+                <MudText Typo="Typo.h6">@impegno.Name</MudText>
+                <MudText Typo="Typo.body2">@impegno.Description</MudText>
+        </MudListItem>
+    }
+    <MudListItem></MudListItem>
+    
+</MudList>
+  
+
+
+@code {
+
+    [Parameter]
+    public List<ImpegnoDTO> ImpegniDataCliccata { get; set; }
+
+
+}
